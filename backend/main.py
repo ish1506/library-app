@@ -48,12 +48,21 @@ async def log_request(request: Request, call_next):
         raise
 
     response.headers["X-Request-ID"] = request_id
-    route = getattr(request.scope.get("route"), "path", request.url.path)
+    matched_route = request.scope.get("route")
+    route = getattr(matched_route, "path", request.url.path)
+    if matched_route is None:
+        logger.warning(
+            "request_unmatched request_id=%s method=%s path=%s",
+            request_id,
+            request.method,
+            request.url.path,
+        )
     logger.debug(
-        "request_completed request_id=%s method=%s route=%s status_code=%s duration_ms=%.2f",
+        "request_completed request_id=%s method=%s route=%s matched=%s status_code=%s duration_ms=%.2f",
         request_id,
         request.method,
         route,
+        matched_route is not None,
         response.status_code,
         (perf_counter() - started_at) * 1_000,
     )

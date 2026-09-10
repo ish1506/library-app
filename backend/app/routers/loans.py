@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Sequence
 from time import time
 
@@ -13,6 +14,7 @@ from app.routers.dependencies import require_user
 from app.schemas.book_loan import BookLoanResponse
 
 router = APIRouter(prefix="/loans", tags=["loans"])
+logger = logging.getLogger("uvicorn.error.library_api")
 
 USER_DEPENDENCY = Depends(require_user)
 DB_DEPENDENCY = Depends(get_db)
@@ -22,7 +24,7 @@ DB_DEPENDENCY = Depends(get_db)
 async def list_my_loans(
     user: User = USER_DEPENDENCY, db: AsyncSession = DB_DEPENDENCY
 ) -> Sequence[BookLoan]:
-    return (
+    loans = (
         await db.scalars(
             select(BookLoan)
             .where(
@@ -32,6 +34,8 @@ async def list_my_loans(
             .order_by(BookLoan.loan_timestamp.desc())
         )
     ).all()
+    logger.debug("my_loans_listed user_id=%s loan_count=%s", user.id, len(loans))
+    return loans
 
 
 @router.post("/{loan_id}/return", response_model=BookLoanResponse)

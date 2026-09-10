@@ -173,6 +173,11 @@ async def borrow_book(
             status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
         )
     if book.available_copies <= 0:
+        logger.info(
+            "book_borrow_rejected book_id=%s user_id=%s reason=unavailable",
+            book_id,
+            user.id,
+        )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Book is unavailable"
         )
@@ -184,6 +189,12 @@ async def borrow_book(
         )
     )
     if active_loan is not None:
+        logger.info(
+            "book_borrow_rejected book_id=%s user_id=%s reason=active_loan loan_id=%s",
+            book_id,
+            user.id,
+            active_loan.id,
+        )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Active loan already exists",
@@ -201,6 +212,12 @@ async def borrow_book(
     db.add(loan)
     await db.commit()
     await db.refresh(loan)
+    logger.info(
+        "book_borrowed book_id=%s user_id=%s loan_id=%s",
+        book_id,
+        user.id,
+        loan.id,
+    )
     return loan
 
 
