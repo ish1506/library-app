@@ -78,6 +78,35 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'No books yet' })).toBeInTheDocument()
   })
 
+  it('applies combined text and inclusive date filters', async () => {
+    listBooksMock.mockResolvedValueOnce([]).mockResolvedValueOnce([])
+    render(<App />)
+    await signIn('USER')
+    fireEvent.change(screen.getByLabelText('Search title or author'), { target: { value: 'Dune' } })
+    fireEvent.change(screen.getByLabelText('Publication date from'), { target: { value: '2024-01-01' } })
+    fireEvent.change(screen.getByLabelText('Publication date to'), { target: { value: '2024-01-31' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
+    await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {
+      q: 'Dune', date_from: '2024-01-01T00:00:00Z', date_to: '2024-01-31T23:59:59Z',
+    }))
+    expect(screen.getByRole('heading', { name: 'No matching books' })).toBeInTheDocument()
+  })
+
+  it('rejects reversed dates without reloading and clears the active filters', async () => {
+    listBooksMock.mockResolvedValueOnce([]).mockResolvedValueOnce([])
+    render(<App />)
+    await signIn('USER')
+    fireEvent.change(screen.getByLabelText('Publication date from'), { target: { value: '2024-02-01' } })
+    fireEvent.change(screen.getByLabelText('Publication date to'), { target: { value: '2024-01-01' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('start date must be on or before')
+    expect(listBooksMock).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }))
+    await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {}))
+    expect(screen.getByLabelText('Search title or author')).toHaveValue('')
+  })
+
   it('formats the detail publication timestamp as an ISO calendar date', async () => {
     listMyLoansMock.mockResolvedValueOnce([])
     const book = { id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 2, available_copies: 1 }

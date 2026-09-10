@@ -20,6 +20,12 @@ export type BookCreate = {
 
 export type BookUpdate = Partial<BookCreate>
 
+export type BookListFilters = {
+  q?: string
+  date_from?: string
+  date_to?: string
+}
+
 export class BooksApiError extends Error {
   readonly status: number
 
@@ -86,8 +92,13 @@ async function request<T>(path: string, token: string, init: RequestInit = {}): 
   return body as T
 }
 
-export async function listBooks(token: string): Promise<Book[]> {
-  const body = await request<unknown>('/books', token)
+export async function listBooks(token: string, filters: BookListFilters = {}): Promise<Book[]> {
+  const params = new URLSearchParams()
+  if (filters.q?.trim()) params.set('q', filters.q.trim())
+  if (filters.date_from) params.set('date_from', filters.date_from)
+  if (filters.date_to) params.set('date_to', filters.date_to)
+  const query = params.toString()
+  const body = await request<unknown>(query ? `/books?${query}` : '/books', token)
   if (!Array.isArray(body) || !body.every(isBook)) {
     throw new BooksApiError(0, 'The library service returned an unexpected catalogue response.')
   }
