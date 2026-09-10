@@ -20,6 +20,12 @@ The API is available at `http://127.0.0.1:8000`, with interactive documentation 
 Request-time database access uses SQLAlchemy's async API with the psycopg driver;
 Alembic and the local seed helper use a separate synchronous client.
 
+Refresh the checked-in OpenAPI document from the application definition with:
+
+```bash
+uv run python scripts/refresh_openapi.py
+```
+
 The development script accepts the same additional arguments as the FastAPI CLI,
 for example `./scripts/dev.sh --port 8001`. It can be run from the `backend`
 directory or by providing its path from another directory.
