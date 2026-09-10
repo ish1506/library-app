@@ -9,13 +9,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.book import Book
 from app.models.user import User
-from app.routers.dependencies import require_admin
+from app.routers.dependencies import get_current_user, require_admin
 from app.schemas.book import BookCreate, BookResponse, BookUpdate
 
 router = APIRouter(prefix="/books", tags=["books"])
 logger = logging.getLogger("uvicorn.error.library_api")
 
 ADMIN_DEPENDENCY = Depends(require_admin)
+USER_DEPENDENCY = Depends(get_current_user)
 DB_DEPENDENCY = Depends(get_db)
 
 
@@ -28,7 +29,7 @@ def isbn_conflict(error: IntegrityError) -> bool:
 
 @router.get("", response_model=list[BookResponse])
 async def list_books(
-    _admin: User = ADMIN_DEPENDENCY, db: AsyncSession = DB_DEPENDENCY
+    _user: User = USER_DEPENDENCY, db: AsyncSession = DB_DEPENDENCY
 ) -> Sequence[Book]:
     return (await db.scalars(select(Book).order_by(Book.id))).all()
 
@@ -36,7 +37,7 @@ async def list_books(
 @router.get("/{book_id}", response_model=BookResponse)
 async def get_book(
     book_id: int,
-    _admin: User = ADMIN_DEPENDENCY,
+    _user: User = USER_DEPENDENCY,
     db: AsyncSession = DB_DEPENDENCY,
 ) -> Book:
     book = await db.get(Book, book_id)
@@ -83,11 +84,14 @@ async def update_book(
         )
 
     updates = payload.model_dump(exclude_unset=True)
-    if "total_copies" in updates and updates["total_copies"] < book.available_copies:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail="total_copies cannot be less than available_copies",
-        )
+    if "total_copies" in updates:
+        copies_delta = updates["total_copies"] - book.total_copies
+        if book.available_copies + copies_delta < 0:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="total_copies cannot be reduced below checked-out copies",
+            )
+        updates["available_copies"] = book.available_copies + copies_delta
     for field, value in updates.items():
         setattr(book, field, value)
 

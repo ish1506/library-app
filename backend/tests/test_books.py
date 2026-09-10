@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from app.database import get_db
 from app.models.book import Book
 from app.models.user import Role, User
-from app.routers.dependencies import require_admin
+from app.routers.dependencies import get_current_user, require_admin
 from app.services.auth import create_access_token
 from fastapi.testclient import TestClient
 from main import app
@@ -66,9 +66,11 @@ class FakeSession:
 
 def client_for(session: FakeSession) -> TestClient:
     app.dependency_overrides[get_db] = lambda: session
-    app.dependency_overrides[require_admin] = lambda: User(
+    admin = lambda: User(
         id=1, username="admin", password_hash="hash", role=Role.ADMIN
     )
+    app.dependency_overrides[require_admin] = admin
+    app.dependency_overrides[get_current_user] = admin
     return TestClient(app)
 
 
@@ -141,15 +143,34 @@ def test_duplicate_normalized_isbn_returns_a_conflict() -> None:
     assert response.json() == {"detail": "ISBN already exists"}
 
 
-def test_update_rejects_total_copies_below_available_copies() -> None:
+def test_update_total_copies_adjusts_available_copies_by_same_delta() -> None:
     session = FakeSession()
     client = client_for(session)
     client.post("/books", json=book_payload())
 
-    response = client.patch("/books/1", json={"total_copies": 2})
+    increased = client.patch("/books/1", json={"total_copies": 5})
+    assert increased.status_code == 200
+    assert increased.json()["total_copies"] == 5
+    assert increased.json()["available_copies"] == 5
+
+    decreased = client.patch("/books/1", json={"total_copies": 2})
+    assert decreased.status_code == 200
+    assert decreased.json()["total_copies"] == 2
+    assert decreased.json()["available_copies"] == 2
+
+
+def test_update_total_copies_cannot_reduce_available_copies_below_zero() -> None:
+    session = FakeSession()
+    client = client_for(session)
+    client.post("/books", json=book_payload())
+    session.books[1].available_copies = 1
+
+    response = client.patch("/books/1", json={"total_copies": 1})
 
     assert response.status_code == 422
-    assert response.json() == {"detail": "total_copies cannot be less than available_copies"}
+    assert response.json() == {
+        "detail": "total_copies cannot be reduced below checked-out copies"
+    }
 
 
 def test_missing_books_return_not_found() -> None:
@@ -160,7 +181,7 @@ def test_missing_books_return_not_found() -> None:
     assert client.delete("/books/99").status_code == 404
 
 
-def test_anonymous_and_user_requests_cannot_access_books() -> None:
+def test_anonymous_cannot_list_books_but_users_can() -> None:
     user = User(id=1, username="alice", password_hash="hash", role=Role.USER)
     session = FakeSession(user)
     app.dependency_overrides[get_db] = lambda: session
@@ -173,4 +194,29 @@ def test_anonymous_and_user_requests_cannot_access_books() -> None:
 
     assert anonymous.status_code == 401
     assert anonymous.headers["www-authenticate"] == "Bearer"
-    assert authenticated_user.status_code == 403
+    assert authenticated_user.status_code == 200
+    assert authenticated_user.json() == []
+
+
+def test_user_can_get_a_book() -> None:
+    user = User(id=1, username="alice", password_hash="hash", role=Role.USER)
+    session = FakeSession(user)
+    session.books[1] = Book(
+        id=1,
+        title="The Left Hand of Darkness",
+        author="Ursula K. Le Guin",
+        date=-26409600,
+        isbn="9780441478125",
+        loan_duration_days=14,
+        total_copies=3,
+        available_copies=3,
+    )
+    app.dependency_overrides[get_db] = lambda: session
+    client = TestClient(app)
+
+    response = client.get(
+        "/books/1", headers={"Authorization": f"Bearer {create_access_token(user)}"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
