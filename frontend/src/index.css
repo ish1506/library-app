@@ -11,6 +11,8 @@
   --input-border: #aabfbc;
   --muted: #567177;
   --surface: #fffefa;
+  --success-background: #e3f4e8;
+  --success-text: #24643b;
   color: #28464c;
   background: var(--background);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
