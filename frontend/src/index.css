@@ -1,0 +1,23 @@
+:root {
+  --accent: #1d5e69;
+  --accent-dark: #144851;
+  --background: #edf3f2;
+  --border: #d7e1df;
+  --error-background: #fff0ed;
+  --error-border: #edb1a8;
+  --error-text: #9a2e22;
+  --focus: #e38d36;
+  --heading: #17343b;
+  --input-border: #aabfbc;
+  --muted: #567177;
+  --surface: #fffefa;
+  color: #28464c;
+  background: var(--background);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+}

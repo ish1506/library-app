@@ -1,0 +1,135 @@
+.page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.panel {
+  width: min(100%, 28rem);
+  padding: clamp(1.75rem, 6vw, 3.5rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1.5rem 4rem rgb(20 40 61 / 12%);
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: var(--heading);
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  letter-spacing: -0.04em;
+}
+
+.intro {
+  margin: 0.75rem 0 2rem;
+  color: var(--muted);
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--heading);
+  font-weight: 650;
+}
+
+input,
+button {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.9rem;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+input {
+  padding: 0.65rem 0.75rem;
+  color: var(--heading);
+  background: var(--surface);
+  border: 1px solid var(--input-border);
+}
+
+button {
+  margin-top: 0.5rem;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+input:focus-visible,
+button:focus-visible,
+.error-summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.error-summary,
+.status,
+.field-error {
+  border-radius: 0.5rem;
+}
+
+.error-summary {
+  margin: 1.25rem 0;
+  padding: 0.8rem 0.9rem;
+  color: var(--error-text);
+  background: var(--error-background);
+  border: 1px solid var(--error-border);
+}
+
+.status {
+  margin: 1.25rem 0;
+  color: var(--muted);
+}
+
+.field-error {
+  margin: 0.45rem 0 0;
+  color: var(--error-text);
+  font-size: 0.9rem;
+}
+
+.confirmation p:not(.eyebrow) {
+  margin: 1rem 0 1.5rem;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel {
+    animation: arrive 180ms ease-out;
+  }
+}
+
+@keyframes arrive {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
