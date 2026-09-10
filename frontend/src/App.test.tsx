@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { login } from './api/auth'
 import { getBook, listBooks } from './api/books'
+import { borrowBook, listMyLoans, LoansApiError } from './api/loans'
 
 vi.mock('./api/auth', () => ({ login: vi.fn() }))
 vi.mock('./api/books', () => ({
@@ -13,10 +14,19 @@ vi.mock('./api/books', () => ({
   updateBook: vi.fn(),
   deleteBook: vi.fn(),
 }))
+vi.mock('./api/loans', () => ({
+  LoanStatus: { BORROWED: 1, RETURNED: 2 },
+  LoansApiError: class LoansApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status } },
+  borrowBook: vi.fn(),
+  listMyLoans: vi.fn(),
+  returnLoan: vi.fn(),
+}))
 
 const loginMock = vi.mocked(login)
 const listBooksMock = vi.mocked(listBooks)
 const getBookMock = vi.mocked(getBook)
+const listMyLoansMock = vi.mocked(listMyLoans)
+const borrowBookMock = vi.mocked(borrowBook)
 
 function token(role: 'ADMIN' | 'USER') {
   return `header.${btoa(JSON.stringify({ role }))}.signature`
@@ -40,6 +50,7 @@ describe('App', () => {
   })
 
   it('loads a user catalogue without mutation controls', async () => {
+    listMyLoansMock.mockResolvedValueOnce([])
     listBooksMock.mockResolvedValueOnce([{ id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 2, available_copies: 0 }])
     render(<App />)
     await signIn('USER')
@@ -60,6 +71,7 @@ describe('App', () => {
   })
 
   it('handles an empty catalogue state', async () => {
+    listMyLoansMock.mockResolvedValueOnce([])
     listBooksMock.mockResolvedValueOnce([])
     render(<App />)
     await signIn('USER')
@@ -67,6 +79,7 @@ describe('App', () => {
   })
 
   it('formats the detail publication timestamp as an ISO calendar date', async () => {
+    listMyLoansMock.mockResolvedValueOnce([])
     const book = { id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 2, available_copies: 1 }
     listBooksMock.mockResolvedValueOnce([book])
     getBookMock.mockResolvedValueOnce(book)
@@ -75,5 +88,19 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
     expect(await screen.findByText('1970-01-01')).toBeInTheDocument()
     expect(screen.queryByText('0')).not.toBeInTheDocument()
+  })
+
+  it('shows the backend loan conflict in an accessible popup', async () => {
+    const book = { id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 1, available_copies: 1 }
+    listMyLoansMock.mockResolvedValueOnce([])
+    listBooksMock.mockResolvedValueOnce([book])
+    getBookMock.mockResolvedValueOnce(book)
+    const conflict = new LoansApiError(409, 'Active loan already exists')
+    borrowBookMock.mockRejectedValueOnce(conflict)
+    render(<App />)
+    await signIn('USER')
+    fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Borrow book' }))
+    expect(await screen.findByRole('alertdialog')).toHaveTextContent('Active loan already exists')
   })
 })
