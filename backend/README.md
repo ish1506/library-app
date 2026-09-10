@@ -101,7 +101,19 @@ curl -X POST http://127.0.0.1:8000/books \
   }'
 ```
 
-`GET /books` lists the catalogue and `GET /books/{book_id}` returns one book.
+`GET /books` lists the catalogue and accepts optional `q`, `date_from`, and
+`date_to` query parameters. `q` searches title and author terms, while the
+inclusive date bounds accept offset-aware ISO 8601 datetimes. For example:
+
+```bash
+curl --get 'http://127.0.0.1:8000/books' \
+  --data-urlencode 'q=le guin' \
+  --data-urlencode 'date_from=1960-01-01T00:00:00Z' \
+  --data-urlencode 'date_to=1970-12-31T23:59:59Z' \
+  -H 'Authorization: Bearer <admin-token>'
+```
+
+`GET /books/{book_id}` returns one book.
 `PATCH /books/{book_id}` accepts any subset of `title`, `author`, `date`,
 `isbn`, `loan_duration_days`, and `total_copies`; `DELETE /books/{book_id}`
 hard-deletes a book. Creation returns `201`, deletion returns `204`, and

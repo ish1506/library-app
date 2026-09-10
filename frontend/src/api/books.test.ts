@@ -16,6 +16,33 @@ describe('books API', () => {
     })
   })
 
+  it('encodes supplied text and inclusive date filters', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([book]), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await listBooks('secret-token', {
+      q: '  Dune "part two" -film ',
+      date_from: '2024-01-01T00:00:00Z',
+      date_to: '2024-01-31T23:59:59Z',
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/books?q=Dune+%22part+two%22+-film&date_from=2024-01-01T00%3A00%3A00Z&date_to=2024-01-31T23%3A59%3A59Z',
+      { headers: { Authorization: 'Bearer secret-token' } },
+    )
+  })
+
+  it('omits blank optional filters and supports one-sided bounds', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([book]), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await listBooks('secret-token', { q: '  ', date_to: '2024-01-31T23:59:59Z' })
+
+    expect(fetchMock).toHaveBeenCalledWith('/books?date_to=2024-01-31T23%3A59%3A59Z', {
+      headers: { Authorization: 'Bearer secret-token' },
+    })
+  })
+
   it('sends the create contract and handles non-JSON errors', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify(book), { status: 201 }))

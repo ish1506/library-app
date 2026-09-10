@@ -13,6 +13,13 @@ curl --request POST '{{baseUrl}}/auth/login' \
 curl --request GET '{{baseUrl}}/books' \
   --header 'Authorization: Bearer {{adminToken}}'
 
+# Search books and filter by inclusive publication-date bounds.
+curl --get '{{baseUrl}}/books' \
+  --data-urlencode 'q=le guin' \
+  --data-urlencode 'date_from=1960-01-01T00:00:00Z' \
+  --data-urlencode 'date_to=1970-12-31T23:59:59Z' \
+  --header 'Authorization: Bearer {{adminToken}}'
+
 # Get one book
 curl --request GET '{{baseUrl}}/books/{{bookId}}' \
   --header 'Authorization: Bearer {{adminToken}}'

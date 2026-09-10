@@ -40,6 +40,11 @@ button:disabled { cursor: progress; opacity: .7; }
 .loan-meta dd { margin: .25rem 0 0; color: var(--heading); }
 .empty-state { padding: 3rem 1.5rem; text-align: center; background: var(--surface); border: 1px dashed var(--input-border); border-radius: .75rem; }
 .empty-state p { color: var(--muted); }
+.filter-panel { margin: 0 0 1.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: .75rem; }
+.filter-fields { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+.filter-panel .field { margin: 0; }
+.filter-actions { display: flex; gap: .75rem; margin-top: .25rem; }
+.active-filters { margin: 0 0 1rem; color: var(--muted); font-size: .95rem; }
 .detail-heading { margin: 1.5rem 0 2rem; }
 .detail-heading .muted { margin: .5rem 0 0; font-size: 1.1rem; }
 .back-button { margin-top: 1.5rem; }
@@ -59,6 +64,6 @@ button:disabled { cursor: progress; opacity: .7; }
 .dialog p { color: var(--muted); line-height: 1.5; }
 .dialog .eyebrow { color: var(--error-text); }
 input:focus-visible, button:focus-visible, .error-summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-@media (max-width: 42rem) { .app-shell { width: min(100% - 2rem, 72rem); padding-top: 1rem; } .app-header, .section-heading, .detail-heading, .book-card, .loan-card { align-items: stretch; flex-direction: column; } .header-actions, .inline-actions { justify-content: space-between; } .header-actions button, .book-card button, .loan-card button { width: 100%; } .metadata, .form-grid { grid-template-columns: 1fr; } .form-grid .field:first-child, .form-grid .field:nth-child(2) { grid-column: auto; } }
+@media (max-width: 42rem) { .app-shell { width: min(100% - 2rem, 72rem); padding-top: 1rem; } .app-header, .section-heading, .detail-heading, .book-card, .loan-card { align-items: stretch; flex-direction: column; } .header-actions, .inline-actions { justify-content: space-between; } .header-actions button, .book-card button, .loan-card button { width: 100%; } .metadata, .form-grid, .filter-fields { grid-template-columns: 1fr; } .form-grid .field:first-child, .form-grid .field:nth-child(2) { grid-column: auto; } .filter-actions button { flex: 1; } }
 @media (prefers-reduced-motion: no-preference) { .panel, .book-card { animation: arrive 180ms ease-out; } }
 @keyframes arrive { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: translateY(0); } }

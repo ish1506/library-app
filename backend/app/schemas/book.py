@@ -1,7 +1,14 @@
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    WithJsonSchema,
+    field_validator,
+    model_validator,
+)
 
 
 def _parse_publication_date(value: Any) -> int:
@@ -99,3 +106,46 @@ class BookResponse(BaseModel):
     loan_duration_days: int
     total_copies: int
     available_copies: int
+
+
+class BookListQuery(BaseModel):
+    q: str | None = None
+    date_from: Annotated[
+        int | None,
+        WithJsonSchema(
+            {"anyOf": [{"type": "string"}, {"type": "null"}]}, mode="validation"
+        ),
+    ] = None
+    date_to: Annotated[
+        int | None,
+        WithJsonSchema(
+            {"anyOf": [{"type": "string"}, {"type": "null"}]}, mode="validation"
+        ),
+    ] = None
+
+    @field_validator("q")
+    @classmethod
+    def normalize_query(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("q must not be blank")
+        return normalized
+
+    @field_validator("date_from", "date_to", mode="before", json_schema_input_type=str)
+    @classmethod
+    def parse_date_bound(cls, value: Any) -> int | None:
+        if value is None:
+            return None
+        return _parse_publication_date(value)
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> "BookListQuery":
+        if (
+            self.date_from is not None
+            and self.date_to is not None
+            and self.date_from > self.date_to
+        ):
+            raise ValueError("date_from must not be after date_to")
+        return self

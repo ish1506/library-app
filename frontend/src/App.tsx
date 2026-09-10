@@ -9,6 +9,7 @@ import {
   listBooks,
   type Book,
   type BookCreate,
+  type BookListFilters,
   updateBook,
 } from './api/books'
 import { borrowBook, listMyLoans, LoansApiError, LoanStatus, returnLoan, type BookLoan } from './api/loans'
@@ -25,10 +26,12 @@ type FormValues = {
   loan_duration_days: string
   total_copies: string
 }
+type DateFilterDraft = { q: string; date_from: string; date_to: string }
 
 const emptyForm: FormValues = {
   title: '', author: '', date: '', isbn: '', loan_duration_days: '', total_copies: '',
 }
+const emptyDateFilters: DateFilterDraft = { q: '', date_from: '', date_to: '' }
 
 function decodeRole(token: string): Role | null {
   try {
@@ -70,6 +73,22 @@ function availability(book: Book): { label: string; available: boolean } {
     : { label: 'Currently unavailable', available: false }
 }
 
+function filtersFromDraft(draft: DateFilterDraft): BookListFilters {
+  return { q: draft.q.trim() || undefined, date_from: draft.date_from ? `${draft.date_from}T00:00:00Z` : undefined, date_to: draft.date_to ? `${draft.date_to}T23:59:59Z` : undefined }
+}
+
+function filtersAreActive(filters: BookListFilters): boolean {
+  return Boolean(filters.q || filters.date_from || filters.date_to)
+}
+
+function filterSummary(filters: BookListFilters): string {
+  const criteria = []
+  if (filters.q) criteria.push(`"${filters.q}"`)
+  if (filters.date_from) criteria.push(`from ${filters.date_from.slice(0, 10)}`)
+  if (filters.date_to) criteria.push(`to ${filters.date_to.slice(0, 10)}`)
+  return criteria.join(' · ')
+}
+
 function App() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -96,6 +115,10 @@ function App() {
   const [borrowMessage, setBorrowMessage] = useState('')
   const [loanPopupMessage, setLoanPopupMessage] = useState('')
   const [currentTimestamp] = useState(() => Date.now() / 1000)
+  const [draftFilters, setDraftFilters] = useState(emptyDateFilters)
+  const [appliedFilters, setAppliedFilters] = useState<BookListFilters>({})
+  const [filterError, setFilterError] = useState('')
+  const listRequestId = useRef(0)
   const errorSummary = useRef<HTMLDivElement>(null)
   const loginHasError = Boolean(usernameError || passwordError || requestError)
 
@@ -142,6 +165,7 @@ function App() {
   }
 
   function signOut(message = '') {
+    listRequestId.current += 1
     setSession(null)
     setBooks([])
     setSelectedBook(null)
@@ -152,20 +176,45 @@ function App() {
     setBorrowMessage('')
     setLoanPopupMessage('')
     setRequestError(message)
+    setDraftFilters(emptyDateFilters)
+    setAppliedFilters({})
+    setFilterError('')
   }
 
-  async function refreshBooks(currentSession = session) {
+  async function refreshBooks(currentSession = session, filters = appliedFilters) {
     if (!currentSession) return
+    const requestId = ++listRequestId.current
     setListLoading(true)
     setListError('')
     try {
-      setBooks(await listBooks(currentSession.accessToken))
+      const nextBooks = await listBooks(currentSession.accessToken, filters)
+      if (requestId === listRequestId.current) setBooks(nextBooks)
     } catch (error) {
+      if (requestId !== listRequestId.current) return
       if (error instanceof BooksApiError && error.status === 401) signOut(error.message)
       else setListError(error instanceof Error ? error.message : 'Unable to load the catalogue.')
     } finally {
       setListLoading(false)
     }
+  }
+
+  function applyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (draftFilters.date_from && draftFilters.date_to && draftFilters.date_from > draftFilters.date_to) {
+      setFilterError('The publication start date must be on or before the end date.')
+      return
+    }
+    const nextFilters = filtersFromDraft(draftFilters)
+    setFilterError('')
+    setAppliedFilters(nextFilters)
+    void refreshBooks(session, nextFilters)
+  }
+
+  function clearFilters() {
+    setDraftFilters(emptyDateFilters)
+    setFilterError('')
+    setAppliedFilters({})
+    void refreshBooks(session, {})
   }
 
   async function refreshLoans(currentSession = session) {
@@ -305,7 +354,7 @@ function App() {
         await createBook(session.accessToken, { ...values, date: dateForApi(formValues.date) })
       }
       setView('list')
-      await refreshBooks(session)
+      await refreshBooks(session, appliedFilters)
     } catch (error) {
       if (error instanceof BooksApiError && error.status === 401) signOut(error.message)
       else setRequestError(error instanceof Error ? error.message : 'Unable to save the book.')
@@ -322,7 +371,7 @@ function App() {
       await deleteBook(session.accessToken, selectedBook.id)
       setDeleteConfirm(false)
       setView('list')
-      await refreshBooks(session)
+      await refreshBooks(session, appliedFilters)
     } catch (error) {
       if (error instanceof BooksApiError && error.status === 401) signOut(error.message)
       else setRequestError(error instanceof Error ? error.message : 'Unable to delete the book.')
@@ -351,10 +400,12 @@ function App() {
   return <main className="app-shell">
     <header className="app-header"><div><p className="eyebrow">Library catalogue</p><h1>Books</h1></div><div className="header-actions"><span className="role-label">{currentRole === 'ADMIN' ? 'Administrator' : 'Member'}</span>{currentRole === 'USER' && <button className="button-secondary" type="button" onClick={() => { setView('loans'); void refreshLoans() }}>My loans</button>}<button className="button-secondary" type="button" onClick={() => signOut()}>Sign out</button></div></header>
     {requestError && <div className="error-summary" role="alert" tabIndex={-1}>{requestError}</div>}
-    {view === 'list' && <section aria-labelledby="catalogue-heading"><div className="section-heading"><div><h2 id="catalogue-heading">Catalogue</h2><p className="muted">Browse the library collection and check availability.</p></div>{currentRole === 'ADMIN' && <button type="button" onClick={openCreate}>Add book</button>}</div>
+     {view === 'list' && <section aria-labelledby="catalogue-heading"><div className="section-heading"><div><h2 id="catalogue-heading">Catalogue</h2><p className="muted">Browse the library collection and check availability.</p></div>{currentRole === 'ADMIN' && <button type="button" onClick={openCreate}>Add book</button>}</div>
+       <form className="filter-panel" onSubmit={applyFilters} aria-label="Filter catalogue"><fieldset disabled={isPending || listLoading}><div className="filter-fields"><div className="field"><label htmlFor="catalogue-search">Search title or author</label><input id="catalogue-search" type="search" value={draftFilters.q} onChange={(event) => setDraftFilters({ ...draftFilters, q: event.target.value })} /></div><div className="field"><label htmlFor="date-from">Publication date from</label><input id="date-from" type="date" value={draftFilters.date_from} onChange={(event) => setDraftFilters({ ...draftFilters, date_from: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div><div className="field"><label htmlFor="date-to">Publication date to</label><input id="date-to" type="date" value={draftFilters.date_to} onChange={(event) => setDraftFilters({ ...draftFilters, date_to: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div></div><div className="filter-actions"><button type="submit">Apply filters</button><button className="button-secondary" type="button" onClick={clearFilters}>Clear filters</button></div></fieldset>{filterError && <p className="field-error" id="filter-error" role="alert">{filterError}</p>}</form>
+       {filtersAreActive(appliedFilters) && <p className="active-filters" aria-live="polite">Showing results for {filterSummary(appliedFilters)}</p>}
       {listLoading && <p className="status" role="status">Loading catalogue...</p>}
       {listError && <div className="error-summary" role="alert">{listError}<button type="button" className="button-secondary" onClick={() => void refreshBooks()}>Retry</button></div>}
-      {!listLoading && !listError && books.length === 0 && <div className="empty-state"><h3>No books yet</h3><p>The catalogue is empty.</p></div>}
+       {!listLoading && !listError && books.length === 0 && (filtersAreActive(appliedFilters) ? <div className="empty-state"><h3>No matching books</h3><p>No books match the active filters.</p><button className="button-secondary" type="button" onClick={clearFilters}>Clear filters</button></div> : <div className="empty-state"><h3>No books yet</h3><p>The catalogue is empty.</p></div>)}
       {!listLoading && !listError && books.length > 0 && <div className="book-list" role="list">{books.map((book) => { const state = availability(book); return <article className="book-card" role="listitem" key={book.id}><div><h3>{book.title}</h3><p>{book.author}</p><span className={`availability ${state.available ? 'available' : 'unavailable'}`}>{state.label}</span></div><button className="button-secondary" type="button" onClick={() => void openDetail(book.id)}>View details</button></article> })}</div>}
     </section>}
      {view === 'detail' && <section aria-labelledby="detail-heading"><button className="back-button" type="button" onClick={() => setView('list')}>Back to catalogue</button>{detailLoading && <p className="status" role="status">Loading book...</p>}{detailError && <div className="error-summary" role="alert">{detailError}</div>}{borrowMessage && <p className="success-message" role="status">{borrowMessage}</p>}{selectedBook && <><div className="detail-heading"><div><p className="eyebrow">Book details</p><h2 id="detail-heading">{selectedBook.title}</h2><p className="muted">{selectedBook.author}</p></div>{currentRole === 'ADMIN' && <div className="inline-actions"><button type="button" onClick={openEdit}>Edit</button><button className="button-danger" type="button" onClick={() => setDeleteConfirm(true)}>Delete</button></div>}{currentRole === 'USER' && <button type="button" onClick={() => void handleBorrow()} disabled={borrowPending || selectedBook.available_copies <= 0}>{borrowPending ? 'Borrowing...' : 'Borrow book'}</button>}</div><dl className="metadata"><div><dt>ISBN</dt><dd>{selectedBook.isbn}</dd></div><div><dt>Publication date</dt><dd>{formatPublicationDate(selectedBook.date)}</dd></div><div><dt>Loan duration</dt><dd>{selectedBook.loan_duration_days} days</dd></div><div><dt>Total copies</dt><dd>{selectedBook.total_copies}</dd></div><div><dt>Availability</dt><dd>{availability(selectedBook).label}</dd></div></dl></>}

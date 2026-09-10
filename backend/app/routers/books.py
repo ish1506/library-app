@@ -1,9 +1,10 @@
 import logging
 from collections.abc import Sequence
 from time import time
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import func, select
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from sqlalchemy import desc, func, literal_column, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +13,7 @@ from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
 from app.models.user import User
 from app.routers.dependencies import get_current_user, require_admin, require_user
-from app.schemas.book import BookCreate, BookResponse, BookUpdate
+from app.schemas.book import BookCreate, BookListQuery, BookResponse, BookUpdate
 from app.schemas.book_loan import BookLoanResponse
 
 router = APIRouter(prefix="/books", tags=["books"])
@@ -22,6 +23,14 @@ ADMIN_DEPENDENCY = Depends(require_admin)
 CURRENT_USER_DEPENDENCY = Depends(get_current_user)
 USER_DEPENDENCY = Depends(require_user)
 DB_DEPENDENCY = Depends(get_db)
+
+
+def book_search_vector():
+    return func.setweight(
+        func.to_tsvector("simple", Book.title), literal_column("'A'")
+    ).op("||")(
+        func.setweight(func.to_tsvector("simple", Book.author), literal_column("'B'"))
+    )
 
 
 def isbn_conflict(error: IntegrityError) -> bool:
@@ -40,9 +49,34 @@ def loan_history_conflict(error: IntegrityError) -> bool:
 
 @router.get("", response_model=list[BookResponse])
 async def list_books(
-    _user: User = CURRENT_USER_DEPENDENCY, db: AsyncSession = DB_DEPENDENCY
+    query: Annotated[BookListQuery, Query()],
+    _user: User = CURRENT_USER_DEPENDENCY,
+    db: AsyncSession = DB_DEPENDENCY,
 ) -> Sequence[Book]:
-    return (await db.scalars(select(Book).order_by(Book.id))).all()
+    statement = select(Book)
+    if query.q is not None:
+        search_vector = book_search_vector()
+        statement = statement.where(
+            search_vector.op("@@")(func.websearch_to_tsquery("simple", query.q))
+        )
+    if query.date_from is not None:
+        statement = statement.where(Book.date >= query.date_from)
+    if query.date_to is not None:
+        statement = statement.where(Book.date <= query.date_to)
+
+    if query.q is not None:
+        statement = statement.order_by(
+            desc(
+                func.ts_rank_cd(
+                    book_search_vector(),
+                    func.websearch_to_tsquery("simple", query.q),
+                )
+            ),
+            Book.id,
+        )
+    else:
+        statement = statement.order_by(Book.id)
+    return (await db.scalars(statement)).all()
 
 
 @router.get("/{book_id}", response_model=BookResponse)
