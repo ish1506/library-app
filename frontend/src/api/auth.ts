@@ -1,3 +1,5 @@
+import { debugLog } from '../debug'
+
 export type LoginCredentials = {
   username: string
   password: string
@@ -50,6 +52,7 @@ async function readJson(response: Response): Promise<unknown> {
 
 export async function login(credentials: LoginCredentials): Promise<LoginResult> {
   let response: Response
+  debugLog('login_request_started')
 
   try {
     response = await fetch(`${apiBaseUrl}/auth/login`, {
@@ -58,16 +61,19 @@ export async function login(credentials: LoginCredentials): Promise<LoginResult>
       body: JSON.stringify(credentials),
     })
   } catch {
+    debugLog('login_request_failed', { reason: 'network' })
     return { ok: false, message: 'Unable to reach the library service. Check that it is running and try again.' }
   }
 
   const body = await readJson(response)
 
   if (response.ok && isTokenResponse(body)) {
+    debugLog('login_succeeded', { statusCode: response.status })
     return { ok: true, accessToken: body.access_token }
   }
 
   if (response.status === 401) {
+    debugLog('login_request_failed', { reason: 'invalid_credentials', statusCode: response.status })
     return {
       ok: false,
       message: isApiError(body) && typeof body.detail === 'string'
@@ -77,8 +83,10 @@ export async function login(credentials: LoginCredentials): Promise<LoginResult>
   }
 
   if (response.status === 422 && isValidationError(body)) {
+    debugLog('login_request_failed', { reason: 'validation', statusCode: response.status })
     return { ok: false, message: 'The sign-in request was invalid. Check your details and try again.' }
   }
 
+  debugLog('login_request_failed', { reason: 'unexpected_response', statusCode: response.status })
   return { ok: false, message: 'The library service could not complete your sign-in. Please try again.' }
 }

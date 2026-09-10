@@ -1,3 +1,5 @@
+import logging
+
 from app.database import get_db
 from app.models.user import Role, User
 from app.services.auth import hash_password
@@ -55,6 +57,27 @@ def test_unknown_and_wrong_password_have_identical_401_responses() -> None:
         == wrong.headers["www-authenticate"]
         == "Bearer"
     )
+
+
+def test_login_logs_request_without_credentials(caplog) -> None:
+    caplog.set_level(logging.DEBUG, logger="uvicorn.error.library_api")
+    client = client_for(
+        User(
+            id=1,
+            username="alice",
+            password_hash=hash_password("secret"),
+            role=Role.USER,
+        )
+    )
+
+    response = client.post(
+        "/auth/login", json={"username": "alice", "password": "secret"}
+    )
+
+    assert response.headers["x-request-id"]
+    assert "request_started" in caplog.text
+    assert "request_completed" in caplog.text
+    assert "secret" not in caplog.text
 
 
 def test_malformed_login_body_is_rejected() -> None:

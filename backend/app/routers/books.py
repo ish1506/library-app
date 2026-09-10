@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -12,6 +13,7 @@ from app.routers.dependencies import require_admin
 from app.schemas.book import BookCreate, BookResponse, BookUpdate
 
 router = APIRouter(prefix="/books", tags=["books"])
+logger = logging.getLogger("uvicorn.error.library_api")
 
 ADMIN_DEPENDENCY = Depends(require_admin)
 DB_DEPENDENCY = Depends(get_db)
@@ -63,6 +65,7 @@ async def create_book(
             ) from error
         raise
     await db.refresh(book)
+    logger.debug("book_created book_id=%s", book.id)
     return book
 
 
@@ -98,6 +101,7 @@ async def update_book(
             ) from error
         raise
     await db.refresh(book)
+    logger.debug("book_updated book_id=%s", book.id)
     return book
 
 
@@ -114,4 +118,5 @@ async def delete_book(
         )
     await db.delete(book)
     await db.commit()
+    logger.debug("book_deleted book_id=%s", book_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { login } from './api/auth'
 import './App.css'
+import { debugLog } from './debug'
 
 function App() {
   const [username, setUsername] = useState('')
@@ -31,17 +32,24 @@ function App() {
     if (nextUsernameError || nextPasswordError) return
 
     setIsPending(true)
-    const result = await login({ username: username.trim(), password })
-    setIsPending(false)
+    try {
+      const result = await login({ username: username.trim(), password })
 
-    if (result.ok) {
-      setAccessToken(result.accessToken)
+      if (result.ok) {
+        setAccessToken(result.accessToken)
+        setPassword('')
+        return
+      }
+
       setPassword('')
-      return
+      setRequestError(result.message)
+    } catch {
+      debugLog('login_unexpected_error')
+      setPassword('')
+      setRequestError('The library service could not complete your sign-in. Please try again.')
+    } finally {
+      setIsPending(false)
     }
-
-    setPassword('')
-    setRequestError(result.message)
   }
 
   if (accessToken) {
