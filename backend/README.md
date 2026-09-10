@@ -80,3 +80,47 @@ curl -X POST http://127.0.0.1:8000/auth/login \
 Successful responses contain a one-hour HS256 bearer access token. Invalid
 usernames and passwords return the same `401 Invalid username or password`
 response.
+
+## Books catalogue
+
+All catalogue endpoints require an `ADMIN` bearer token. Missing, malformed,
+expired, or stale tokens return `401` with `WWW-Authenticate: Bearer`; valid
+`USER` tokens return `403`.
+
+```bash
+curl -X POST http://127.0.0.1:8000/books \
+  -H 'Authorization: Bearer <admin-token>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin",
+    "date": "1969-03-01T00:00:00-08:00",
+    "isbn": "978-0-441-47812-5",
+    "loan_duration_days": 14,
+    "total_copies": 3
+  }'
+```
+
+`GET /books` lists the catalogue and `GET /books/{book_id}` returns one book.
+`PATCH /books/{book_id}` accepts any subset of `title`, `author`, `date`,
+`isbn`, `loan_duration_days`, and `total_copies`; `DELETE /books/{book_id}`
+hard-deletes a book. Creation returns `201`, deletion returns `204`, and
+duplicate ISBN-13 values return `409 ISBN already exists`.
+
+Publication dates are accepted as offset-aware ISO 8601 datetimes and are
+stored and returned as Unix timestamps in seconds. ISBNs accept only 13 digits;
+spaces and hyphens are removed before storage, so equivalent formatted ISBN-13
+values conflict. ISBN-10 values and checksum validation are out of scope.
+
+## Sample requests
+
+Run the development server, then copy a request from
+`sample_requests/books.txt` into Postman or a terminal. Define Postman
+variables for `baseUrl`, `username`, `password`, `adminToken`, and `bookId`.
+
+```bash
+cat sample_requests/books.txt
+```
+
+The create example uses zero total copies; modify the request body for another
+supported payload.

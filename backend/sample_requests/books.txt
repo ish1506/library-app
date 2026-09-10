@@ -1,0 +1,44 @@
+# Replace {{baseUrl}}, {{username}}, {{password}}, {{adminToken}}, and {{bookId}}
+# with Postman environment variables or concrete values before sending.
+
+# Log in as an ADMIN user. Copy access_token from the response into adminToken.
+curl --request POST '{{baseUrl}}/auth/login' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "username": "{{username}}",
+    "password": "{{password}}"
+  }'
+
+# List books
+curl --request GET '{{baseUrl}}/books' \
+  --header 'Authorization: Bearer {{adminToken}}'
+
+# Get one book
+curl --request GET '{{baseUrl}}/books/{{bookId}}' \
+  --header 'Authorization: Bearer {{adminToken}}'
+
+# Create a book with zero copies. The date must include a timezone offset.
+curl --request POST '{{baseUrl}}/books' \
+  --header 'Authorization: Bearer {{adminToken}}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin",
+    "date": "1969-03-01T00:00:00-08:00",
+    "isbn": "978-0-441-47812-5",
+    "loan_duration_days": 14,
+    "total_copies": 0
+  }'
+
+# Update one or more allowed fields.
+curl --request PATCH '{{baseUrl}}/books/{{bookId}}' \
+  --header 'Authorization: Bearer {{adminToken}}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "title": "The Dispossessed",
+    "total_copies": 3
+  }'
+
+# Delete a book
+curl --request DELETE '{{baseUrl}}/books/{{bookId}}' \
+  --header 'Authorization: Bearer {{adminToken}}'
