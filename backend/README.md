@@ -17,6 +17,8 @@ uv run alembic upgrade head
 ```
 
 The API is available at `http://127.0.0.1:8000`, with interactive documentation at `/docs` and a health check at `/health`.
+Request-time database access uses SQLAlchemy's async API with the psycopg driver;
+Alembic and the local seed helper use a separate synchronous client.
 
 The development script accepts the same additional arguments as the FastAPI CLI,
 for example `./scripts/dev.sh --port 8001`. It can be run from the `backend`

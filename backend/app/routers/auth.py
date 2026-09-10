@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.user import User
@@ -11,8 +11,10 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(credentials: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
-    user = db.scalar(select(User).where(User.username == credentials.username))
+async def login(
+    credentials: LoginRequest, db: AsyncSession = Depends(get_db)
+) -> TokenResponse:
+    user = await db.scalar(select(User).where(User.username == credentials.username))
     if user is None or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -9,7 +9,7 @@ class FakeSession:
     def __init__(self, user: User | None) -> None:
         self.user = user
 
-    def scalar(self, _query: object) -> User | None:
+    async def scalar(self, _query: object) -> User | None:
         return self.user
 
 
