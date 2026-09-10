@@ -105,7 +105,8 @@ curl -X POST http://127.0.0.1:8000/books \
 `PATCH /books/{book_id}` accepts any subset of `title`, `author`, `date`,
 `isbn`, `loan_duration_days`, and `total_copies`; `DELETE /books/{book_id}`
 hard-deletes a book. Creation returns `201`, deletion returns `204`, and
-duplicate ISBN-13 values return `409 ISBN already exists`.
+duplicate ISBN-13 values return `409 ISBN already exists`. Inventory reductions
+cannot set `total_copies` below the sum of active and available copies.
 
 Publication dates are accepted as offset-aware ISO 8601 datetimes and are
 stored and returned as Unix timestamps in seconds. ISBNs accept only 13 digits;
@@ -124,3 +125,32 @@ cat sample_requests/books.txt
 
 The create example uses zero total copies; modify the request body for another
 supported payload.
+
+## Book loans
+
+Borrowing and returning require a `USER` bearer token. `POST
+/books/{book_id}/loans` creates a title-level loan and returns `201`; `GET
+/loans/me` lists only the caller's active loans; and `POST
+/loans/{loan_id}/return` returns one of the caller's active loans. An `ADMIN`
+can use `GET /books/{book_id}/loans` to list that book's active loans and
+borrower IDs. These endpoints return Unix UTC timestamps in seconds and use
+status `1` for `BORROWED` and `2` for `RETURNED`.
+
+Unavailable books and duplicate active loans return `409`. A returned loan
+cannot be returned again, and a book with loan history cannot be deleted.
+Overdue loans remain active until returned. Reservations, renewal, late fees,
+and per-copy inventory are not supported.
+
+```bash
+curl -X POST http://127.0.0.1:8000/books/$bookId/loans \
+  -H 'Authorization: Bearer <user-token>'
+
+curl http://127.0.0.1:8000/loans/me \
+  -H 'Authorization: Bearer <user-token>'
+
+curl -X POST http://127.0.0.1:8000/loans/$loanId/return \
+  -H 'Authorization: Bearer <user-token>'
+
+curl http://127.0.0.1:8000/books/$bookId/loans \
+  -H 'Authorization: Bearer <admin-token>'
+```

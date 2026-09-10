@@ -42,6 +42,11 @@ class FakeSession:
     async def scalars(self, _query: object) -> ScalarResult:
         return ScalarResult(self.books.values())
 
+    async def scalar(self, query: object) -> Book | int | None:
+        if "count(" in str(query):
+            return 0
+        return next(iter(self.books.values()), None)
+
     def add(self, book: Book) -> None:
         self.pending = book
 

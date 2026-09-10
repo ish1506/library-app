@@ -6,6 +6,7 @@ from uuid import uuid4
 from app.database import async_engine
 from app.routers.auth import router as auth_router
 from app.routers.books import router as books_router
+from app.routers.loans import router as loans_router
 from fastapi import FastAPI, Request
 
 logger = logging.getLogger("uvicorn.error.library_api")
@@ -21,6 +22,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="Library API", version="0.1.0", lifespan=lifespan)
 app.include_router(auth_router)
 app.include_router(books_router)
+app.include_router(loans_router)
 
 
 @app.middleware("http")

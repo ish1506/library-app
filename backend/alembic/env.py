@@ -1,5 +1,8 @@
 from logging.config import fileConfig
 
+# Register every model with Base.metadata for Alembic checks and autogeneration.
+# See https://alembic.sqlalchemy.org/en/latest/autogenerate.html.
+import app.models  # noqa: F401
 from alembic import context
 from app.config import settings
 from app.database import Base

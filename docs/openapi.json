@@ -260,6 +260,179 @@
         }
       }
     },
+    "/books/{book_id}/loans": {
+      "post": {
+        "tags": [
+          "books"
+        ],
+        "summary": "Borrow Book",
+        "operationId": "borrow_book_books__book_id__loans_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Book Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookLoanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "List Book Loans",
+        "operationId": "list_book_loans_books__book_id__loans_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Book Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookLoanResponse"
+                  },
+                  "title": "Response List Book Loans Books  Book Id  Loans Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loans/me": {
+      "get": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "List My Loans",
+        "operationId": "list_my_loans_loans_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BookLoanResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List My Loans Loans Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/loans/{loan_id}/return": {
+      "post": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Return Loan",
+        "operationId": "return_loan_loans__loan_id__return_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "loan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Loan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookLoanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health Check",
@@ -324,6 +497,55 @@
           "total_copies"
         ],
         "title": "BookCreate"
+      },
+      "BookLoanResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "book_id": {
+            "type": "integer",
+            "title": "Book Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "loan_timestamp": {
+            "type": "integer",
+            "title": "Loan Timestamp"
+          },
+          "due_at_timestamp": {
+            "type": "integer",
+            "title": "Due At Timestamp"
+          },
+          "returned_timestamp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returned Timestamp"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LoanStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "book_id",
+          "user_id",
+          "loan_timestamp",
+          "due_at_timestamp",
+          "returned_timestamp",
+          "status"
+        ],
+        "title": "BookLoanResponse"
       },
       "BookResponse": {
         "properties": {
@@ -452,6 +674,14 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LoanStatus": {
+        "type": "integer",
+        "enum": [
+          1,
+          2
+        ],
+        "title": "LoanStatus"
       },
       "LoginRequest": {
         "properties": {
