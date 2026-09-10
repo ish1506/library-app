@@ -13,10 +13,33 @@ uv sync
 cp .env.example .env
 # Set DATABASE_URL to a PostgreSQL database and JWT_SECRET_KEY to a random secret.
 uv run alembic upgrade head
-uv run fastapi dev main.py
+./scripts/dev.sh
 ```
 
 The API is available at `http://127.0.0.1:8000`, with interactive documentation at `/docs` and a health check at `/health`.
+
+The development script accepts the same additional arguments as the FastAPI CLI,
+for example `./scripts/dev.sh --port 8001`. It can be run from the `backend`
+directory or by providing its path from another directory.
+
+## Run tests
+
+Run the test suite from the `backend` directory:
+
+```bash
+./scripts/test.sh
+```
+
+The service and API tests run without a database. The PostgreSQL schema test is
+skipped unless `TEST_DATABASE_URL` or `DATABASE_URL` is set. To run it, point
+`TEST_DATABASE_URL` at a migrated test database:
+
+```bash
+TEST_DATABASE_URL='postgresql+psycopg://library_app:password@localhost:5432/library_db' ./scripts/test.sh
+```
+
+Additional pytest arguments can be passed through, such as
+`./scripts/test.sh tests/test_login.py -q`.
 
 ## Configuration
 
