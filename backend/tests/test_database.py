@@ -3,11 +3,14 @@ from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
+
+import pytest
 from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
 from app.models.user import Role, User
-from sqlalchemy import create_engine, delete, insert, inspect, select
+from app.routers.books import book_search_vector
+from sqlalchemy import create_engine, delete, func, insert, inspect, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
 
@@ -220,6 +223,57 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
             )
         with pytest.raises(IntegrityError), connection.begin_nested():
             connection.execute(delete(Book).where(Book.id == book_id))
+    finally:
+        transaction.rollback()
+        connection.close()
+        engine.dispose()
+
+
+def test_books_search_indexes_and_predicates(database_url: str) -> None:
+    engine = create_engine(database_url)
+    connection = engine.connect()
+    transaction = connection.begin()
+    try:
+        indexes = {index["name"] for index in inspect(engine).get_indexes("books")}
+        assert {"ix_books_title_author_search", "ix_books_date"} <= indexes
+
+        connection.execute(
+            insert(Book),
+            [
+                {
+                    "title": "The Left Hand of Darkness",
+                    "author": "Ursula K. Le Guin",
+                    "date": 0,
+                    "isbn": "9780441478125",
+                    "loan_duration_days": 14,
+                    "total_copies": 1,
+                    "available_copies": 1,
+                },
+                {
+                    "title": "The Dispossessed",
+                    "author": "Ursula K. Le Guin",
+                    "date": 1,
+                    "isbn": "9780151554658",
+                    "loan_duration_days": 14,
+                    "total_copies": 1,
+                    "available_copies": 1,
+                },
+            ],
+        )
+        search = book_search_vector()
+        text_results = connection.execute(
+            select(Book).where(
+                search.op("@@")(
+                    func.websearch_to_tsquery("simple", "dispossessed")
+                )
+            )
+        ).scalars().all()
+        assert [book.title for book in text_results] == ["The Dispossessed"]
+
+        date_results = connection.execute(
+            select(Book).where(Book.date >= 1, Book.date <= 1)
+        ).scalars().all()
+        assert [book.title for book in date_results] == ["The Dispossessed"]
     finally:
         transaction.rollback()
         connection.close()

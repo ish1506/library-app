@@ -40,7 +40,29 @@ class FakeSession:
         return self.books.get(item_id)
 
     async def scalars(self, _query: object) -> ScalarResult:
-        return ScalarResult(self.books.values())
+        query = _query
+        books = list(self.books.values())
+        statement = str(query)
+        params = getattr(query.compile(), "params", {})
+        if "websearch_to_tsquery" in statement:
+            search = params["websearch_to_tsquery_2"]
+            terms = search.lower().split()
+            books = [
+                book
+                for book in books
+                if all(
+                    term in {word.lower() for word in (book.title + " " + book.author).split()}
+                    for term in terms
+                )
+            ]
+        date_values = [value for value in params.values() if isinstance(value, int)]
+        if "books.date >=" in statement:
+            lower = date_values.pop(0)
+            books = [book for book in books if book.date >= lower]
+        if "books.date <=" in statement:
+            upper = date_values.pop(0)
+            books = [book for book in books if book.date <= upper]
+        return ScalarResult(sorted(books, key=lambda book: book.id))
 
     async def scalar(self, query: object) -> Book | int | None:
         if "count(" in str(query):
@@ -225,3 +247,55 @@ def test_user_can_get_a_book() -> None:
 
     assert response.status_code == 200
     assert response.json()["id"] == 1
+
+
+def test_books_can_be_searched_and_filtered_by_date() -> None:
+    session = FakeSession()
+    client = client_for(session)
+    client.post("/books", json=book_payload())
+    client.post(
+        "/books",
+        json=book_payload(
+            title="The Dispossessed",
+            date="1974-01-01T00:00:00Z",
+            isbn="9780151554658",
+        ),
+    )
+    client.post(
+        "/books",
+        json=book_payload(
+            title="A Wizard of Earthsea",
+            date="1968-01-01T00:00:00Z",
+            isbn="9780547773742",
+        ),
+    )
+
+    assert [book["title"] for book in client.get("/books?q=dispossessed").json()] == [
+        "The Dispossessed"
+    ]
+    assert len(client.get("/books?q=ursula").json()) == 3
+    assert client.get("/books?q=missing").json() == []
+    assert len(client.get("/books?date_from=1970-01-01T00:00:00Z").json()) == 1
+    assert len(client.get("/books?date_to=1969-03-01T08:00:00Z").json()) == 2
+    assert len(
+        client.get(
+            "/books?date_from=1969-03-01T08:00:00Z&date_to=1974-01-01T00:00:00Z"
+        ).json()
+    ) == 2
+    assert len(
+        client.get("/books?q=  ursula  &date_to=1969-03-01T08:00:00Z").json()
+    ) == 2
+
+
+def test_book_search_rejects_invalid_query_parameters() -> None:
+    client = client_for(FakeSession())
+
+    assert client.get("/books?q=%20%20").status_code == 422
+    assert client.get("/books?date_from=1969-03-01").status_code == 422
+    assert client.get("/books?date_to=not-a-date").status_code == 422
+    assert (
+        client.get(
+            "/books?date_from=1970-01-01T00:00:00Z&date_to=1969-01-01T00:00:00Z"
+        ).status_code
+        == 422
+    )
