@@ -273,7 +273,6 @@ async def list_book_loans(
             select(BookLoan)
             .where(
                 BookLoan.book_id == book_id,
-                BookLoan.status == LoanStatus.BORROWED,
             )
             .order_by(BookLoan.loan_timestamp.desc())
         )

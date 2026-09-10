@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { login } from './api/auth'
 import { getBook, listBooks } from './api/books'
-import { borrowBook, listMyLoans, LoansApiError } from './api/loans'
+import { borrowBook, listBookLoans, listMyLoans, LoansApiError } from './api/loans'
 
 vi.mock('./api/auth', () => ({ login: vi.fn() }))
 vi.mock('./api/books', () => ({
@@ -18,6 +18,7 @@ vi.mock('./api/loans', () => ({
   LoanStatus: { BORROWED: 1, RETURNED: 2 },
   LoansApiError: class LoansApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status } },
   borrowBook: vi.fn(),
+  listBookLoans: vi.fn(),
   listMyLoans: vi.fn(),
   returnLoan: vi.fn(),
 }))
@@ -26,6 +27,7 @@ const loginMock = vi.mocked(login)
 const listBooksMock = vi.mocked(listBooks)
 const getBookMock = vi.mocked(getBook)
 const listMyLoansMock = vi.mocked(listMyLoans)
+const listBookLoansMock = vi.mocked(listBookLoans)
 const borrowBookMock = vi.mocked(borrowBook)
 
 function token(role: 'ADMIN' | 'USER') {
@@ -131,5 +133,20 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Borrow book' }))
     expect(await screen.findByRole('alertdialog')).toHaveTextContent('Active loan already exists')
+  })
+
+  it('lets an admin view loans for a book from the detail view', async () => {
+    const book = { id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 1, available_copies: 0 }
+    listBooksMock.mockResolvedValueOnce([book])
+    getBookMock.mockResolvedValueOnce(book)
+    listBookLoansMock.mockResolvedValueOnce([{ id: 4, book_id: 1, user_id: 8, loan_timestamp: 100, due_at_timestamp: 200, returned_timestamp: null, status: 1 }])
+    render(<App />)
+    await signIn('ADMIN')
+    fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'View loan history' }))
+
+    expect(await screen.findByRole('heading', { name: 'Loan history' })).toBeInTheDocument()
+    expect(screen.getByText('Loan #4')).toBeInTheDocument()
+    expect(listBookLoansMock).toHaveBeenCalledWith('header.eyJyb2xlIjoiQURNSU4ifQ==.signature', 1)
   })
 })

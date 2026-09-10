@@ -92,6 +92,14 @@ export async function listMyLoans(token: string): Promise<BookLoan[]> {
   return body
 }
 
+export async function listBookLoans(token: string, bookId: number): Promise<BookLoan[]> {
+  const body = await request<unknown>(`/books/${bookId}/loans`, token, 'GET')
+  if (!Array.isArray(body) || !body.every(isBookLoan)) {
+    throw new LoansApiError(0, 'The library service returned an unexpected book-loans response.')
+  }
+  return body
+}
+
 export async function returnLoan(token: string, loanId: number): Promise<BookLoan> {
   return validateLoan(await request<unknown>(`/loans/${loanId}/return`, token, 'POST'))
 }

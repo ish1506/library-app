@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { borrowBook, listMyLoans, LoansApiError, returnLoan } from './loans'
+import { borrowBook, listBookLoans, listMyLoans, LoansApiError, returnLoan } from './loans'
 
 const loan = {
   id: 4,
@@ -30,6 +30,16 @@ describe('loans API', () => {
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ nope: true }), { status: 200 }))
     await expect(listMyLoans('token')).rejects.toMatchObject({ status: 0 })
+  })
+
+  it('lists loans for a book with the bearer token', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([loan]), { status: 200 }))
+
+    await expect(listBookLoans('token', 2)).resolves.toEqual([loan])
+    expect(fetchMock).toHaveBeenCalledWith('/books/2/loans', {
+      method: 'GET',
+      headers: { Authorization: 'Bearer token' },
+    })
   })
 
   it('normalizes conflicts and validates return responses', async () => {
