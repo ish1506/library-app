@@ -262,18 +262,18 @@ def test_books_search_indexes_and_predicates(database_url: str) -> None:
         )
         search = book_search_vector()
         text_results = connection.execute(
-            select(Book).where(
+            select(Book.title).where(
                 search.op("@@")(
                     func.websearch_to_tsquery("simple", "dispossessed")
                 )
             )
         ).scalars().all()
-        assert [book.title for book in text_results] == ["The Dispossessed"]
+        assert text_results == ["The Dispossessed"]
 
         date_results = connection.execute(
-            select(Book).where(Book.date >= 1, Book.date <= 1)
+            select(Book.title).where(Book.date >= 1, Book.date <= 1)
         ).scalars().all()
-        assert [book.title for book in date_results] == ["The Dispossessed"]
+        assert date_results == ["The Dispossessed"]
     finally:
         transaction.rollback()
         connection.close()
