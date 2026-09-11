@@ -28,6 +28,16 @@ button:disabled { cursor: progress; opacity: .7; }
 .loan-list { display: grid; gap: 1rem; }
 .book-card { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: .75rem; box-shadow: 0 .5rem 1.5rem rgb(20 40 61 / 5%); }
 .loan-card { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: .75rem; box-shadow: 0 .5rem 1.5rem rgb(20 40 61 / 5%); }
+.notification-panel { margin: 1.25rem 0; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: .75rem; }
+.notification-panel .section-heading { margin: 0 0 1rem; }
+.notification-button { display: inline-flex; align-items: center; gap: .5rem; }
+.notification-dot { width: .55rem; height: .55rem; display: inline-block; border-radius: 50%; background: #c62828; box-shadow: 0 0 0 2px var(--surface); }
+.notification-list { display: grid; gap: .75rem; }
+.notification-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem; border: 1px solid var(--border); border-radius: .5rem; }
+.notification-card p { margin: .35rem 0 0; }
+.reservation-callout { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.5rem 0; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--input-border); border-radius: .75rem; }
+.reservation-callout p { margin: 0; }
+.reservation-deadline { color: var(--accent-dark); font-weight: 650; }
 .book-card p { margin: .35rem 0 .75rem; color: var(--muted); }
 .loan-card p { margin: .35rem 0 .75rem; }
 .availability { display: inline-block; padding: .25rem .55rem; border-radius: 99rem; font-size: .85rem; font-weight: 700; }
@@ -64,6 +74,6 @@ button:disabled { cursor: progress; opacity: .7; }
 .dialog p { color: var(--muted); line-height: 1.5; }
 .dialog .eyebrow { color: var(--error-text); }
 input:focus-visible, button:focus-visible, .error-summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-@media (max-width: 42rem) { .app-shell { width: min(100% - 2rem, 72rem); padding-top: 1rem; } .app-header, .section-heading, .detail-heading, .book-card, .loan-card { align-items: stretch; flex-direction: column; } .header-actions, .inline-actions { justify-content: space-between; } .header-actions button, .book-card button, .loan-card button { width: 100%; } .metadata, .form-grid, .filter-fields { grid-template-columns: 1fr; } .form-grid .field:first-child, .form-grid .field:nth-child(2) { grid-column: auto; } .filter-actions button { flex: 1; } }
+@media (max-width: 42rem) { .app-shell { width: min(100% - 2rem, 72rem); padding-top: 1rem; } .app-header, .section-heading, .detail-heading, .book-card, .loan-card, .notification-card, .reservation-callout { align-items: stretch; flex-direction: column; } .header-actions, .inline-actions { justify-content: space-between; } .header-actions button, .book-card button, .loan-card button, .notification-card button, .reservation-callout button { width: 100%; } .metadata, .form-grid, .filter-fields { grid-template-columns: 1fr; } .form-grid .field:first-child, .form-grid .field:nth-child(2) { grid-column: auto; } .filter-actions button { flex: 1; } }
 @media (prefers-reduced-motion: no-preference) { .panel, .book-card { animation: arrive 180ms ease-out; } }
 @keyframes arrive { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: translateY(0); } }

@@ -1,9 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { login } from './api/auth'
 import { getBook, listBooks } from './api/books'
 import { borrowBook, listBookLoans, listMyLoans, LoansApiError } from './api/loans'
+import { createReservation, listMyReservations } from './api/reservations'
+import { listUnreadNotifications, markNotificationRead } from './api/notifications'
 
 vi.mock('./api/auth', () => ({ login: vi.fn() }))
 vi.mock('./api/books', () => ({
@@ -22,6 +24,20 @@ vi.mock('./api/loans', () => ({
   listMyLoans: vi.fn(),
   returnLoan: vi.fn(),
 }))
+vi.mock('./api/reservations', () => ({
+  ReservationStatus: { PENDING: 1, READY: 2, FULFILLED: 3, CANCELLED: 4, EXPIRED: 5 },
+  ReservationsApiError: class ReservationsApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status } },
+  createReservation: vi.fn(),
+  listMyReservations: vi.fn(),
+  confirmReservation: vi.fn(),
+  cancelReservation: vi.fn(),
+}))
+vi.mock('./api/notifications', () => ({
+  NotificationType: { RESERVATION_READY: 1 },
+  NotificationsApiError: class NotificationsApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status } },
+  listUnreadNotifications: vi.fn(),
+  markNotificationRead: vi.fn(),
+}))
 
 const loginMock = vi.mocked(login)
 const listBooksMock = vi.mocked(listBooks)
@@ -29,6 +45,15 @@ const getBookMock = vi.mocked(getBook)
 const listMyLoansMock = vi.mocked(listMyLoans)
 const listBookLoansMock = vi.mocked(listBookLoans)
 const borrowBookMock = vi.mocked(borrowBook)
+const listMyReservationsMock = vi.mocked(listMyReservations)
+const listUnreadNotificationsMock = vi.mocked(listUnreadNotifications)
+const createReservationMock = vi.mocked(createReservation)
+const markNotificationReadMock = vi.mocked(markNotificationRead)
+
+beforeEach(() => {
+  listMyReservationsMock.mockResolvedValue([])
+  listUnreadNotificationsMock.mockResolvedValue([])
+})
 
 function token(role: 'ADMIN' | 'USER') {
   return `header.${btoa(JSON.stringify({ role }))}.signature`
@@ -146,6 +171,32 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Borrow book' }))
     expect(await screen.findByRole('alertdialog')).toHaveTextContent('Active loan already exists')
+  })
+
+  it('lets a user reserve an unavailable title', async () => {
+    const book = { id: 1, title: 'Dune', author: 'Frank Herbert', date: 0, isbn: '9780441013593', loan_duration_days: 14, total_copies: 1, available_copies: 0 }
+    listBooksMock.mockResolvedValue(book ? [book] : [])
+    getBookMock.mockResolvedValue(book)
+    createReservationMock.mockResolvedValue({ id: 3, book_id: 1, user_id: 7, created_at_timestamp: 100, ready_at_timestamp: null, expires_at_timestamp: null, fulfilled_at_timestamp: null, cancelled_at_timestamp: null, status: 1 })
+    render(<App />)
+    await signIn('USER')
+    fireEvent.click(await screen.findByRole('button', { name: 'View details' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Reserve book' }))
+    await waitFor(() => expect(createReservationMock).toHaveBeenCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', 1))
+    expect(await screen.findByRole('status')).toHaveTextContent('Reservation created')
+  })
+
+  it('shows unread notifications and marks them read', async () => {
+    const notification = { id: 5, user_id: 7, reservation_id: 3, created_at_timestamp: 100, read_at_timestamp: null, type: 1 as const, payload: { title: 'Dune', author: 'Frank Herbert', deadline: 200 } }
+    listBooksMock.mockResolvedValueOnce([])
+    listUnreadNotificationsMock.mockResolvedValueOnce([notification])
+    markNotificationReadMock.mockResolvedValueOnce({ ...notification, read_at_timestamp: 300 })
+    render(<App />)
+    await signIn('USER')
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications (1)' }))
+    expect(screen.getByText('Dune is ready')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Mark read' }))
+    await waitFor(() => expect(markNotificationReadMock).toHaveBeenCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', 5))
   })
 
   it('lets an admin view loans for a book from the detail view', async () => {

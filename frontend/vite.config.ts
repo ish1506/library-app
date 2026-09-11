@@ -9,6 +9,8 @@ export default defineConfig({
       '/auth': 'http://127.0.0.1:8000',
       '/books': 'http://127.0.0.1:8000',
       '/loans': 'http://127.0.0.1:8000',
+      '/reservations': 'http://127.0.0.1:8000',
+      '/notifications': 'http://127.0.0.1:8000',
     },
   },
   test: {
