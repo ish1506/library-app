@@ -13,6 +13,7 @@ from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
 from app.models.book_reservation import BookReservation, ReservationStatus
 from app.models.user import User
+from app.policy import library_policy
 from app.routers.dependencies import get_current_user, require_admin, require_user
 from app.schemas.book import BookCreate, BookListQuery, BookResponse, BookUpdate
 from app.schemas.book_loan import BookLoanResponse
@@ -128,7 +129,11 @@ async def create_book(
     _admin: User = ADMIN_DEPENDENCY,
     db: AsyncSession = DB_DEPENDENCY,
 ) -> Book:
-    book = Book(**payload.model_dump(), available_copies=payload.total_copies)
+    book = Book(
+        **payload.model_dump(),
+        available_copies=payload.total_copies,
+        late_fee_cents_per_day=library_policy.late_fees.daily_rate_cents,
+    )
     db.add(book)
     try:
         await db.commit()
@@ -290,6 +295,7 @@ async def borrow_book(
         loan_timestamp=now,
         due_at_timestamp=now + book.loan_duration_days * 86_400,
         status=LoanStatus.BORROWED,
+        late_fee_cents=0,
     )
     book.available_copies -= 1
     db.add(loan)

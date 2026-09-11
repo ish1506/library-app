@@ -62,6 +62,7 @@ def test_books_schema_persists_values_and_enforces_constraints(
             "loan_duration_days",
             "total_copies",
             "available_copies",
+            "late_fee_cents_per_day",
         }
 
         result = connection.execute(
@@ -73,6 +74,7 @@ def test_books_schema_persists_values_and_enforces_constraints(
                 loan_duration_days=14,
                 total_copies=2,
                 available_copies=2,
+                late_fee_cents_per_day=50,
             )
         )
         assert result.inserted_primary_key[0]
@@ -87,6 +89,7 @@ def test_books_schema_persists_values_and_enforces_constraints(
                     loan_duration_days=14,
                     total_copies=2,
                     available_copies=2,
+                    late_fee_cents_per_day=50,
                 )
             )
 
@@ -100,6 +103,7 @@ def test_books_schema_persists_values_and_enforces_constraints(
                     loan_duration_days=0,
                     total_copies=1,
                     available_copies=2,
+                    late_fee_cents_per_day=50,
                 )
             )
     finally:
@@ -122,6 +126,7 @@ def test_book_loans_schema_has_constraints_and_partial_indexes(
             "due_at_timestamp",
             "returned_timestamp",
             "status",
+            "late_fee_cents",
         }
         assert {
             constraint["name"]
@@ -130,6 +135,7 @@ def test_book_loans_schema_has_constraints_and_partial_indexes(
             "ck_book_loans_status_valid",
             "ck_book_loans_due_at_after_loan",
             "ck_book_loans_lifecycle_consistent",
+            "ck_book_loans_late_fee_cents_nonnegative",
         }
         indexes = {index["name"] for index in inspector.get_indexes("book_loans")}
         assert indexes == {
@@ -175,6 +181,7 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
                 loan_duration_days=14,
                 total_copies=1,
                 available_copies=0,
+                late_fee_cents_per_day=50,
             )
             .returning(Book.id)
         ).scalar_one()
@@ -186,6 +193,7 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
                 loan_timestamp=1_700_000_000,
                 due_at_timestamp=1_700_000_000 + 86_400,
                 status=LoanStatus.BORROWED,
+                late_fee_cents=0,
             )
             .returning(BookLoan.id)
         ).scalar_one()
@@ -199,6 +207,7 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
                     loan_timestamp=1_700_000_001,
                     due_at_timestamp=1_700_000_002,
                     status=LoanStatus.BORROWED,
+                    late_fee_cents=0,
                 )
             )
         with pytest.raises(IntegrityError), connection.begin_nested():
@@ -209,6 +218,7 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
                     loan_timestamp=1_700_000_000,
                     due_at_timestamp=1_699_999_999,
                     status=LoanStatus.BORROWED,
+                    late_fee_cents=0,
                 )
             )
         with pytest.raises(IntegrityError), connection.begin_nested():
@@ -219,6 +229,7 @@ def test_book_loans_constraints_preserve_lifecycle_and_history(
                     loan_timestamp=1_700_000_000,
                     due_at_timestamp=1_700_000_001,
                     status=LoanStatus.BORROWED,
+                    late_fee_cents=0,
                     returned_timestamp=1_700_000_002,
                 )
             )

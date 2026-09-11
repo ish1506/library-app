@@ -1,0 +1,5 @@
+late_fees:
+  daily_rate_cents: 50
+reservations:
+  hold_seconds: 86400
+  worker_interval_seconds: 60

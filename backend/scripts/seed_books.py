@@ -254,13 +254,15 @@ def load_books(
     inserted = 0
     with session_factory.begin() as db:
         from app.models.book import Book
+        from app.policy import library_policy
 
         existing = set(db.scalars(select(Book.isbn)).all())
         for row in rows:
             if row["isbn"] not in existing:
                 db.add(
                     Book(
-                        **{key: row[key] for key in CSV_COLUMNS if key != "source_key"}
+                        **{key: row[key] for key in CSV_COLUMNS if key != "source_key"},
+                        late_fee_cents_per_day=library_policy.late_fees.daily_rate_cents,
                     )
                 )
                 existing.add(row["isbn"])

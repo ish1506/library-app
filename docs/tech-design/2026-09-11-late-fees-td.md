@@ -71,7 +71,7 @@ flowchart LR
 
 1. Add PyYAML to `backend/pyproject.toml` and update `backend/uv.lock`. Add the committed YAML policy file and a focused policy loader/model that resolves the file path relative to the backend source tree and fails clearly on missing or invalid configuration.
 2. Extend the SQLAlchemy models with `Book.late_fee_cents_per_day` and `BookLoan.late_fee_cents`, including named positive/non-negative check constraints and application defaults where appropriate.
-3. Add reversible Alembic revision `20260911_0007` after current head `20260910_0006`. Read and validate the configured rate before schema mutation; add the two columns, backfill books with the configured rate, calculate historical/final loan fees from timestamps and book rates, apply named constraints and `NOT NULL`, and remove temporary server defaults so all future values come from application logic. Downgrade drops the fee constraints and columns only.
+3. Add reversible Alembic revision `20260911_0008` after current head `20260910_0006`. Read and validate the configured rate before schema mutation; add the two columns, backfill books with the configured rate, calculate historical/final loan fees from timestamps and book rates, apply named constraints and `NOT NULL`, and remove temporary server defaults so all future values come from application logic. Downgrade drops the fee constraints and columns only.
 4. Extend book creation so API-created books receive the startup policy rate without accepting it from clients. Extend the seed load path so `Book` rows receive the policy rate at database insertion time; keep fetched/cache CSV content policy-neutral so loading the same catalogue under a later configured policy snapshots the then-current rate.
 5. Add a pure integer fee-calculation helper with explicit cutoff, due timestamp, and daily-rate inputs. Cover exact due time, one second late, one second before the first full period, exact 24/48-hour boundaries, returned cutoffs, and large valid values.
 6. Extend `BookResponse` with the stored read-only rate and `BookLoanResponse` with the persisted fee. Keep book create/update request schemas unchanged.
@@ -89,7 +89,7 @@ flowchart LR
 - `backend/app/config.py` or a focused `backend/app/policy.py`: validated policy model, source-tree-relative YAML loading, and startup policy instance.
 - `backend/app/models/book.py`: immutable-through-API `late_fee_cents_per_day` column and constraint.
 - `backend/app/models/book_loan.py`: persisted `late_fee_cents` column and constraint.
-- `backend/alembic/versions/20260911_0007_add_late_fees.py`: book/loan column creation, existing-row backfill, constraints, and downgrade.
+- `backend/alembic/versions/20260911_0008_add_late_fees.py`: book/loan column creation, existing-row backfill, constraints, and downgrade.
 - `backend/app/schemas/book.py`: read-only rate in `BookResponse`; create/update remain unchanged.
 - `backend/app/schemas/book_loan.py`: `late_fee_cents` in every loan response.
 - `backend/app/routers/books.py`: configured rate assignment during API book creation; checkout continues to create loans at zero fee.

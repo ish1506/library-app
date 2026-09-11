@@ -24,6 +24,9 @@ class BookLoan(Base):
             "(status = 2 AND returned_timestamp IS NOT NULL)",
             name="ck_book_loans_lifecycle_consistent",
         ),
+        CheckConstraint(
+            "late_fee_cents >= 0", name="ck_book_loans_late_fee_cents_nonnegative"
+        ),
         Index(
             "uq_book_loans_active_user_book",
             "user_id",
@@ -58,3 +61,4 @@ class BookLoan(Base):
     status: Mapped[LoanStatus] = mapped_column(
         Integer, nullable=False, default=LoanStatus.BORROWED
     )
+    late_fee_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

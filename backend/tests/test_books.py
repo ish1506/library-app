@@ -154,6 +154,7 @@ def test_admin_can_create_list_get_update_and_delete_books() -> None:
         "loan_duration_days": 14,
         "total_copies": 3,
         "available_copies": 3,
+        "late_fee_cents_per_day": 50,
     }
 
     assert client.get("/books").json() == [created.json()]
@@ -259,6 +260,7 @@ def test_user_can_get_a_book() -> None:
         loan_duration_days=14,
         total_copies=3,
         available_copies=3,
+        late_fee_cents_per_day=50,
     )
     app.dependency_overrides[get_db] = lambda: session
     client = TestClient(app)

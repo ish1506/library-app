@@ -89,6 +89,7 @@ def loan_fixture(database_url: str) -> Generator[LoanFixture, None, None]:
                     loan_duration_days=14,
                     total_copies=1,
                     available_copies=1,
+                    late_fee_cents_per_day=50,
                 )
                 .returning(Book.id)
             ).scalar_one()
@@ -166,6 +167,7 @@ def test_loan_lifecycle_inventory_and_history(loan_fixture: LoanFixture) -> None
     assert borrowed.status_code == 201
     loan = borrowed.json()
     assert loan["status"] == LoanStatus.BORROWED
+    assert loan["late_fee_cents"] == 0
     assert loan["due_at_timestamp"] - loan["loan_timestamp"] == 14 * 86_400
 
     assert client.post(
@@ -193,7 +195,7 @@ def test_loan_lifecycle_inventory_and_history(loan_fixture: LoanFixture) -> None
         client.post(f"/loans/{loan['id']}/return", headers=user_headers).status_code
         == 409
     )
-    assert client.get("/loans/me", headers=user_headers).json() == []
+    assert client.get("/loans/me", headers=user_headers).json() == [returned.json()]
     assert (
         client.get(f"/books/{fixture.book_id}/loans", headers=admin_headers).json()
         == [returned.json()]

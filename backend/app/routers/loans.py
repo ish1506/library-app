@@ -11,7 +11,8 @@ from app.models.book_loan import BookLoan, LoanStatus
 from app.models.user import User
 from app.routers.dependencies import require_user
 from app.schemas.book_loan import BookLoanResponse
-from app.services.reservations import promote_returned_copy, timestamp
+from app.services.late_fees import calculate_late_fee_cents
+from app.services.reservations import timestamp
 
 router = APIRouter(prefix="/loans", tags=["loans"])
 logger = logging.getLogger("uvicorn.error.library_api")
@@ -24,16 +25,49 @@ DB_DEPENDENCY = Depends(get_db)
 async def list_my_loans(
     user: User = USER_DEPENDENCY, db: AsyncSession = DB_DEPENDENCY
 ) -> Sequence[BookLoan]:
-    loans = (
-        await db.scalars(
-            select(BookLoan)
-            .where(
-                BookLoan.user_id == user.id,
-                BookLoan.status == LoanStatus.BORROWED,
+    loans = list(
+        (
+            await db.scalars(
+                select(BookLoan)
+                .where(BookLoan.user_id == user.id)
+                .order_by(BookLoan.loan_timestamp.desc())
             )
-            .order_by(BookLoan.loan_timestamp.desc())
+        ).all()
+    )
+    active_keys = sorted(
+        (loan.book_id, loan.id) for loan in loans if loan.status == LoanStatus.BORROWED
+    )
+    captured_timestamp = timestamp()
+    for book_id, loan_id in active_keys:
+        book = await db.scalar(select(Book).where(Book.id == book_id).with_for_update())
+        locked_loan = await db.scalar(
+            select(BookLoan).where(BookLoan.id == loan_id).with_for_update()
         )
-    ).all()
+        if (
+            book is None
+            or locked_loan is None
+            or locked_loan.user_id != user.id
+            or locked_loan.status != LoanStatus.BORROWED
+        ):
+            continue
+        fee = calculate_late_fee_cents(
+            due_at_timestamp=locked_loan.due_at_timestamp,
+            cutoff_timestamp=captured_timestamp,
+            daily_rate_cents=book.late_fee_cents_per_day,
+        )
+        if locked_loan.late_fee_cents != fee:
+            locked_loan.late_fee_cents = fee
+
+    await db.commit()
+    loans = list(
+        (
+            await db.scalars(
+                select(BookLoan)
+                .where(BookLoan.user_id == user.id)
+                .order_by(BookLoan.loan_timestamp.desc())
+            )
+        ).all()
+    )
     logger.debug("my_loans_listed user_id=%s loan_count=%s", user.id, len(loans))
     return loans
 
@@ -75,9 +109,15 @@ async def return_loan(
         )
 
     now = timestamp()
+    loan.late_fee_cents = calculate_late_fee_cents(
+        due_at_timestamp=loan.due_at_timestamp,
+        cutoff_timestamp=now,
+        daily_rate_cents=book.late_fee_cents_per_day,
+    )
+    now = timestamp()
     loan.status = LoanStatus.RETURNED
     loan.returned_timestamp = now
-    await promote_returned_copy(db, book, now)
+    book.available_copies += 1
     await db.commit()
     await db.refresh(loan)
     return loan

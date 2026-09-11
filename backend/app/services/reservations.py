@@ -4,11 +4,11 @@ from time import time
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
 from app.models.book_reservation import BookReservation, ReservationStatus
 from app.models.notification import Notification, NotificationType
+from app.policy import library_policy
 
 logger = logging.getLogger("uvicorn.error.library_api")
 
@@ -65,7 +65,9 @@ async def _promote_or_release(
 
     next_reservation.status = ReservationStatus.READY
     next_reservation.ready_at_timestamp = now
-    next_reservation.expires_at_timestamp = now + settings.reservation_hold_seconds
+    next_reservation.expires_at_timestamp = (
+        now + library_policy.reservations.hold_seconds
+    )
     await _notify_ready(db, next_reservation, book, now)
     logger.info(
         "reservation_ready reservation_id=%s book_id=%s user_id=%s",
