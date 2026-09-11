@@ -338,7 +338,7 @@ describe('App', () => {
       created_at_timestamp: 100,
       read_at_timestamp: null,
       type: 1 as const,
-      payload: { title: 'Dune', author: 'Frank Herbert', deadline: 200 },
+      payload: { title: 'Dune', author: 'Frank Herbert', expires_at_timestamp: 200 },
     }
     listBooksMock.mockResolvedValueOnce([])
     listUnreadNotificationsMock.mockResolvedValueOnce([notification])
@@ -347,6 +347,7 @@ describe('App', () => {
     await signIn('USER')
     fireEvent.click(screen.getByRole('button', { name: 'Notifications (1)' }))
     expect(screen.getByText('Dune is ready')).toBeInTheDocument()
+    expect(screen.getByText(/Hold until/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Mark read' }))
     await waitFor(() =>
       expect(markNotificationReadMock).toHaveBeenCalledWith(

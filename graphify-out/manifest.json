@@ -10,14 +10,14 @@
     "semantic_hash": "6364645e99bc9dab66193dc70c002077"
   },
   "backend/alembic/versions/20260910_0002_create_books.py": {
-    "mtime": 1789023983.9983764,
-    "ast_hash": "04e4fb399ce294ee2b5ef83ee2bc21d7",
-    "semantic_hash": "04e4fb399ce294ee2b5ef83ee2bc21d7"
+    "mtime": 1789100393.7412975,
+    "ast_hash": "2027f6bc7d78637a1b749d54e9790714",
+    "semantic_hash": ""
   },
   "backend/alembic/versions/20260910_0003_allow_zero_total_copies.py": {
-    "mtime": 1789023983.9986007,
-    "ast_hash": "937e5df61abcae49bc56073a5feee99e",
-    "semantic_hash": "937e5df61abcae49bc56073a5feee99e"
+    "mtime": 1789100377.2252812,
+    "ast_hash": "d6f19f04f8f0b9c02393d7bf246a8986",
+    "semantic_hash": ""
   },
   "backend/alembic/versions/20260910_0004_create_book_loans.py": {
     "mtime": 1789033831.3346744,
@@ -45,9 +45,9 @@
     "semantic_hash": ""
   },
   "backend/app/database.py": {
-    "mtime": 1789019700.0238104,
-    "ast_hash": "b0d7612f079da2ae66be5bb57b3bf975",
-    "semantic_hash": "b0d7612f079da2ae66be5bb57b3bf975"
+    "mtime": 1789100377.2252812,
+    "ast_hash": "04e0d8aaf2e8c339114d945854f799a4",
+    "semantic_hash": ""
   },
   "backend/app/models/__init__.py": {
     "mtime": 1789097614.4323173,
@@ -65,9 +65,9 @@
     "semantic_hash": ""
   },
   "backend/app/models/user.py": {
-    "mtime": 1789018640.3398218,
-    "ast_hash": "bf123f593931e4fd4f2b3dc627612a8b",
-    "semantic_hash": "bf123f593931e4fd4f2b3dc627612a8b"
+    "mtime": 1789100377.2252812,
+    "ast_hash": "cc2709f711eeb77219bae012661b3a5a",
+    "semantic_hash": ""
   },
   "backend/app/routers/__init__.py": {
     "mtime": 1789018640.3398218,
@@ -175,18 +175,18 @@
     "semantic_hash": "ef83c070e220aa585a40ac88aa95b878"
   },
   "backend/tests/test_book_loans.py": {
-    "mtime": 1789100070.3213284,
-    "ast_hash": "fdce5861214472ba25c7ba50ba5a83dc",
+    "mtime": 1789100377.2252812,
+    "ast_hash": "ec1b04be2b7237ef7728b83e0b394541",
     "semantic_hash": ""
   },
   "backend/tests/test_books.py": {
-    "mtime": 1789100070.3215659,
-    "ast_hash": "8223e5cf6fa494ce249b10ef6a054c4f",
+    "mtime": 1789100377.2252812,
+    "ast_hash": "d822f998dc22dff6af6df83cd9f9030e",
     "semantic_hash": ""
   },
   "backend/tests/test_database.py": {
-    "mtime": 1789100070.321838,
-    "ast_hash": "8dac70eeabcaaae59c8baaf75db29984",
+    "mtime": 1789100377.2252812,
+    "ast_hash": "2e288a33b9a339907375f2c7e25ca1a2",
     "semantic_hash": ""
   },
   "backend/tests/test_lifespan.py": {
@@ -205,7 +205,7 @@
     "semantic_hash": "869c7153654fba3343e06102a39c00cf"
   },
   "docs/openapi.json": {
-    "mtime": 1789100070.3255267,
+    "mtime": 1789103613.4598577,
     "ast_hash": "3115fa200b87ffa5f889d4299db8b17c",
     "semantic_hash": ""
   },
@@ -220,13 +220,13 @@
     "semantic_hash": ""
   },
   "frontend/src/App.test.tsx": {
-    "mtime": 1789100197.1019673,
-    "ast_hash": "77c5f72c6c13468c48e3fe6e44d3bb3b",
+    "mtime": 1789105140.2289126,
+    "ast_hash": "fac83dc30744bd7e4cb6ee6dec6c5de8",
     "semantic_hash": ""
   },
   "frontend/src/App.tsx": {
-    "mtime": 1789100197.1193154,
-    "ast_hash": "a986949a21095f33dc9318b30891eaf6",
+    "mtime": 1789105140.229182,
+    "ast_hash": "cfe7b537994a143fce0495ffaa67ae29",
     "semantic_hash": ""
   },
   "frontend/src/api/auth.test.ts": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789100070.312569,
-    "ast_hash": "be02ffcc511312d50de4fab5a9a0f807",
+    "mtime": 1789105166.105252,
+    "ast_hash": "61d181ccdef359b0b4537f3905be5c4f",
     "semantic_hash": ""
   },
   "backend/AGENTS.md": {
@@ -315,18 +315,18 @@
     "semantic_hash": ""
   },
   "backend/README.md": {
-    "mtime": 1789100070.3133416,
-    "ast_hash": "6543e7b7311af12bdd305699708028c5",
+    "mtime": 1789105166.1058033,
+    "ast_hash": "87468ef2284d50a127b0b9cac0f5f2ee",
     "semantic_hash": ""
   },
   "backend/sample_requests/books.txt": {
-    "mtime": 1789100070.3206444,
-    "ast_hash": "898fd4225acec51a4706089fe5544c56",
+    "mtime": 1789105166.1058033,
+    "ast_hash": "c0bfbc3b210a7b636f5ebc1f4d254277",
     "semantic_hash": ""
   },
   "docs/DEVELOPER_GUIDE.md": {
-    "mtime": 1789091771.1090336,
-    "ast_hash": "7165012b979025f18983bc953e9078df",
+    "mtime": 1789105166.1063595,
+    "ast_hash": "2f2417c5f747cc4edfd449dec87d1632",
     "semantic_hash": ""
   },
   "docs/implementation/2026-09-10-book-loans-code-review-1.md": {
@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "backend/alembic/versions/20260911_0007_create_reservations_and_notifications.py": {
-    "mtime": 1789097614.431777,
-    "ast_hash": "f89eadd5079bfd739faaa8dda5727a83",
+    "mtime": 1789100377.2252812,
+    "ast_hash": "4de511a66196a9b6232db9eca2a3f936",
     "semantic_hash": ""
   },
   "backend/app/models/book_reservation.py": {
@@ -490,8 +490,8 @@
     "semantic_hash": ""
   },
   "frontend/src/api/notifications.test.ts": {
-    "mtime": 1789100197.0932934,
-    "ast_hash": "cc56fccf5be45561ed0beb65129d5c4f",
+    "mtime": 1789105140.229423,
+    "ast_hash": "7ad76280e330c4ec813d9ff717c75bcc",
     "semantic_hash": ""
   },
   "frontend/src/api/notifications.ts": {
@@ -514,19 +514,9 @@
     "ast_hash": "b446f20104d717b8e319705186b0c7c0",
     "semantic_hash": ""
   },
-  "bugs.md": {
-    "mtime": 1789092040.768289,
-    "ast_hash": "60f66c7a201c845d4c505f84a704b87d",
-    "semantic_hash": ""
-  },
   "docs/implementation/2026-09-11-books-sorting-implementation-1.md": {
     "mtime": 1789098050.8571088,
     "ast_hash": "90ad6b87a9480847deaede982c64d4d5",
-    "semantic_hash": ""
-  },
-  "docs/product_requirements.md": {
-    "mtime": 1788841857.1518269,
-    "ast_hash": "ded85f48948aff1689bf01d01ea2e219",
     "semantic_hash": ""
   },
   "docs/take_home_assignment.md": {
@@ -547,6 +537,16 @@
   "frontend/biome.json": {
     "mtime": 1789100193.680081,
     "ast_hash": "8f0587edf79c8266dc39a6014378fd2c",
+    "semantic_hash": ""
+  },
+  ".pre-commit-config.yaml": {
+    "mtime": 1789105166.1047273,
+    "ast_hash": "4946e54f8f27feba4b3ee0f40b055bd4",
+    "semantic_hash": ""
+  },
+  "frontend/README.md": {
+    "mtime": 1789105166.1063595,
+    "ast_hash": "3ef741cd069cb1199fd2e96dc1d41869",
     "semantic_hash": ""
   }
 }

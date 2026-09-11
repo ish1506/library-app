@@ -131,7 +131,7 @@ function payloadText(notification: Notification, key: string): string | null {
 }
 
 function payloadTimestamp(notification: Notification): number | null {
-  const value = notification.payload.deadline
+  const value = notification.payload.expires_at_timestamp
   return typeof value === 'number' ? value : null
 }
 

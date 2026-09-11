@@ -8,7 +8,7 @@ const notification = {
   created_at_timestamp: 100,
   read_at_timestamp: null,
   type: NotificationType.RESERVATION_READY,
-  payload: { title: 'Dune', author: 'Frank Herbert', deadline: 200 },
+  payload: { title: 'Dune', author: 'Frank Herbert', expires_at_timestamp: 200 },
 }
 
 describe('notifications API', () => {
