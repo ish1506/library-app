@@ -99,6 +99,11 @@ hold and `60` seconds for the in-process expiry worker. Each reservation
 mutation also expires relevant holds, so correctness does not depend on the
 worker. A multi-process deployment needs a database-backed scheduler or lease.
 
+For a separately hosted browser frontend, set `CORS_ALLOWED_ORIGINS` to a
+comma-separated list of exact frontend origins, for example
+`https://library-app.vercel.app`. Do not include a trailing slash. The API uses
+bearer tokens, so it does not enable cross-origin cookies.
+
 ## Provision an account
 
 Accounts are provisioned locally with the non-public seed helper, not through an

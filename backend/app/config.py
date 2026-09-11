@@ -19,6 +19,9 @@ class Settings(BaseSettings):
         default=None, validation_alias="POSTGRES_PASSWORD"
     )
     jwt_secret_key: str = Field(validation_alias="JWT_SECRET_KEY")
+    cors_allowed_origins: str = Field(
+        default="", validation_alias="CORS_ALLOWED_ORIGINS"
+    )
 
     model_config = SettingsConfigDict(env_file=PROJECT_ROOT / ".env", extra="ignore")
 
@@ -47,6 +50,14 @@ class Settings(BaseSettings):
             port=5432,
             database=self.postgres_db,
         ).render_as_string(hide_password=False)
+
+    @property
+    def allowed_cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.cors_allowed_origins.split(",")
+            if origin.strip()
+        ]
 
 
 @lru_cache
