@@ -61,6 +61,19 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: 'Add book' })).not.toBeInTheDocument()
   })
 
+  it('navigates from the user loans page back to the catalogue', async () => {
+    listMyLoansMock.mockResolvedValue([])
+    listBooksMock.mockResolvedValueOnce([])
+    render(<App />)
+    await signIn('USER')
+
+    fireEvent.click(screen.getByRole('button', { name: 'My loans' }))
+    expect(await screen.findByRole('heading', { name: 'My loans' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Back to catalogue' }))
+
+    expect(await screen.findByRole('heading', { name: 'Catalogue' })).toBeInTheDocument()
+  })
+
   it('shows admin catalogue controls and signs out without rendering the token', async () => {
     listBooksMock.mockResolvedValueOnce([])
     render(<App />)
