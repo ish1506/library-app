@@ -273,18 +273,22 @@ def test_books_search_indexes_and_predicates(database_url: str) -> None:
             ],
         )
         search = book_search_vector()
-        text_results = connection.execute(
-            select(Book.title).where(
-                search.op("@@")(
-                    func.websearch_to_tsquery("simple", "dispossessed")
+        text_results = (
+            connection.execute(
+                select(Book.title).where(
+                    search.op("@@")(func.websearch_to_tsquery("simple", "dispossessed"))
                 )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         assert text_results == ["The Dispossessed"]
 
-        date_results = connection.execute(
-            select(Book.title).where(Book.date >= 1, Book.date <= 1)
-        ).scalars().all()
+        date_results = (
+            connection.execute(select(Book.title).where(Book.date >= 1, Book.date <= 1))
+            .scalars()
+            .all()
+        )
         assert date_results == ["The Dispossessed"]
     finally:
         transaction.rollback()
@@ -321,16 +325,29 @@ def test_books_sort_expressions_order_case_insensitive_and_by_id(
             for title, author, date in rows
         ]
 
-        title_ids = connection.execute(
-            select(Book.id)
-            .where(Book.id.in_(ids))
-            .order_by(book_sort_expression(BookListQuery.SortBy.TITLE), Book.id.asc())
-        ).scalars().all()
-        date_ids = connection.execute(
-            select(Book.id)
-            .where(Book.id.in_(ids))
-            .order_by(book_sort_expression(BookListQuery.SortBy.DATE).desc(), Book.id.asc())
-        ).scalars().all()
+        title_ids = (
+            connection.execute(
+                select(Book.id)
+                .where(Book.id.in_(ids))
+                .order_by(
+                    book_sort_expression(BookListQuery.SortBy.TITLE), Book.id.asc()
+                )
+            )
+            .scalars()
+            .all()
+        )
+        date_ids = (
+            connection.execute(
+                select(Book.id)
+                .where(Book.id.in_(ids))
+                .order_by(
+                    book_sort_expression(BookListQuery.SortBy.DATE).desc(),
+                    Book.id.asc(),
+                )
+            )
+            .scalars()
+            .all()
+        )
 
         assert title_ids == [ids[1], ids[2], ids[0]]
         assert date_ids == [ids[0], ids[1], ids[2]]

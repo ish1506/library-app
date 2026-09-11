@@ -22,9 +22,7 @@ AsyncSessionLocal = async_sessionmaker(
 
 # Tooling such as Alembic and the seed helper remains synchronous.
 sync_engine = create_engine(settings.database_url, pool_pre_ping=True)
-SessionLocal = sessionmaker(
-    bind=sync_engine, autoflush=False, expire_on_commit=False
-)
+SessionLocal = sessionmaker(bind=sync_engine, autoflush=False, expire_on_commit=False)
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

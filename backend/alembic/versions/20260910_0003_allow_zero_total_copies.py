@@ -23,4 +23,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_constraint("ck_books_total_copies_nonnegative", "books", type_="check")
-    op.create_check_constraint("ck_books_total_copies_positive", "books", "total_copies >= 1")
+    op.create_check_constraint(
+        "ck_books_total_copies_positive", "books", "total_copies >= 1"
+    )

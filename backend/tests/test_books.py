@@ -34,7 +34,9 @@ class FakeSession:
         self.user = user
         self.last_query: str | None = None
 
-    async def get(self, model: type[Book] | type[User], item_id: int) -> Book | User | None:
+    async def get(
+        self, model: type[Book] | type[User], item_id: int
+    ) -> Book | User | None:
         if model is User:
             return self.user
         assert model is Book
@@ -55,7 +57,11 @@ class FakeSession:
                 book
                 for book in books
                 if all(
-                    term in {word.lower() for word in (book.title + " " + book.author).split()}
+                    term
+                    in {
+                        word.lower()
+                        for word in (book.title + " " + book.author).split()
+                    }
                     for term in terms
                 )
             ]
@@ -70,12 +76,14 @@ class FakeSession:
         if "lower(books.title)" in statement:
             books.sort(
                 key=lambda book: book.title.lower(),
-                reverse=" DESC" in statement.split("lower(books.title)", 1)[1].split(",", 1)[0],
+                reverse=" DESC"
+                in statement.split("lower(books.title)", 1)[1].split(",", 1)[0],
             )
         elif "lower(books.author)" in statement:
             books.sort(
                 key=lambda book: book.author.lower(),
-                reverse=" DESC" in statement.split("lower(books.author)", 1)[1].split(",", 1)[0],
+                reverse=" DESC"
+                in statement.split("lower(books.author)", 1)[1].split(",", 1)[0],
             )
         elif "books.date" in statement and "ORDER BY" in statement:
             books.sort(
@@ -115,9 +123,7 @@ class FakeSession:
 
 def client_for(session: FakeSession) -> TestClient:
     app.dependency_overrides[get_db] = lambda: session
-    admin = lambda: User(
-        id=1, username="admin", password_hash="hash", role=Role.ADMIN
-    )
+    admin = lambda: User(id=1, username="admin", password_hash="hash", role=Role.ADMIN)
     app.dependency_overrides[require_admin] = admin
     app.dependency_overrides[get_current_user] = admin
     return TestClient(app)
@@ -172,10 +178,17 @@ def test_admin_can_create_list_get_update_and_delete_books() -> None:
 def test_book_validation_normalizes_isbn_and_rejects_invalid_values() -> None:
     client = client_for(FakeSession())
 
-    assert client.post("/books", json=book_payload(isbn="978 0 441 47812 5")).status_code == 201
-    assert client.post("/books", json=book_payload(isbn="0441478123")).status_code == 422
+    assert (
+        client.post("/books", json=book_payload(isbn="978 0 441 47812 5")).status_code
+        == 201
+    )
+    assert (
+        client.post("/books", json=book_payload(isbn="0441478123")).status_code == 422
+    )
     assert client.post("/books", json=book_payload(title="  ")).status_code == 422
-    assert client.post("/books", json=book_payload(date="1969-03-01")).status_code == 422
+    assert (
+        client.post("/books", json=book_payload(date="1969-03-01")).status_code == 422
+    )
     zero_copies = client.post(
         "/books", json=book_payload(isbn="9780306406157", total_copies=0)
     )
@@ -301,20 +314,26 @@ def test_books_can_be_searched_and_filtered_by_date() -> None:
     assert client.get("/books?q=missing").json() == []
     assert len(client.get("/books?date_from=1970-01-01T00:00:00Z").json()) == 1
     assert len(client.get("/books?date_to=1969-03-01T08:00:00Z").json()) == 2
-    assert len(
-        client.get(
-            "/books?date_from=1969-03-01T08:00:00Z&date_to=1974-01-01T00:00:00Z"
-        ).json()
-    ) == 2
-    assert len(
-        client.get("/books?q=  ursula  &date_to=1969-03-01T08:00:00Z").json()
-    ) == 2
+    assert (
+        len(
+            client.get(
+                "/books?date_from=1969-03-01T08:00:00Z&date_to=1974-01-01T00:00:00Z"
+            ).json()
+        )
+        == 2
+    )
+    assert (
+        len(client.get("/books?q=  ursula  &date_to=1969-03-01T08:00:00Z").json()) == 2
+    )
 
 
 def test_books_can_be_sorted_case_insensitively_with_id_tie_breaking() -> None:
     session = FakeSession()
     client = client_for(session)
-    client.post("/books", json=book_payload(title="zeta", author="Beta", date="1970-01-01T00:00:00Z"))
+    client.post(
+        "/books",
+        json=book_payload(title="zeta", author="Beta", date="1970-01-01T00:00:00Z"),
+    )
     client.post(
         "/books",
         json=book_payload(
@@ -334,10 +353,22 @@ def test_books_can_be_sorted_case_insensitively_with_id_tie_breaking() -> None:
         ),
     )
 
-    assert [book["id"] for book in client.get("/books?sort_by=title").json()] == [2, 3, 1]
-    assert [book["id"] for book in client.get("/books?sort_by=title&sort_order=desc").json()] == [1, 2, 3]
-    assert [book["id"] for book in client.get("/books?sort_by=author").json()] == [2, 1, 3]
-    assert [book["id"] for book in client.get("/books?sort_by=date&sort_order=desc").json()] == [1, 2, 3]
+    assert [book["id"] for book in client.get("/books?sort_by=title").json()] == [
+        2,
+        3,
+        1,
+    ]
+    assert [
+        book["id"] for book in client.get("/books?sort_by=title&sort_order=desc").json()
+    ] == [1, 2, 3]
+    assert [book["id"] for book in client.get("/books?sort_by=author").json()] == [
+        2,
+        1,
+        3,
+    ]
+    assert [
+        book["id"] for book in client.get("/books?sort_by=date&sort_order=desc").json()
+    ] == [1, 2, 3]
 
 
 def test_explicit_sort_overrides_search_relevance() -> None:

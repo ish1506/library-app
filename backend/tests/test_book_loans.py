@@ -196,10 +196,9 @@ def test_loan_lifecycle_inventory_and_history(loan_fixture: LoanFixture) -> None
         == 409
     )
     assert client.get("/loans/me", headers=user_headers).json() == [returned.json()]
-    assert (
-        client.get(f"/books/{fixture.book_id}/loans", headers=admin_headers).json()
-        == [returned.json()]
-    )
+    assert client.get(
+        f"/books/{fixture.book_id}/loans", headers=admin_headers
+    ).json() == [returned.json()]
     assert (
         client.delete(f"/books/{fixture.book_id}", headers=admin_headers).status_code
         == 409

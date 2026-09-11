@@ -29,9 +29,7 @@ def upgrade() -> None:
         sa.CheckConstraint(
             "loan_duration_days >= 1", name="ck_books_loan_duration_days_positive"
         ),
-        sa.CheckConstraint(
-            "total_copies >= 1", name="ck_books_total_copies_positive"
-        ),
+        sa.CheckConstraint("total_copies >= 1", name="ck_books_total_copies_positive"),
         sa.CheckConstraint(
             "available_copies >= 0", name="ck_books_available_copies_nonnegative"
         ),
