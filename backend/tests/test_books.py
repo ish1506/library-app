@@ -41,6 +41,8 @@ class FakeSession:
 
     async def scalars(self, _query: object) -> ScalarResult:
         query = _query
+        if "book_reservations" in str(query):
+            return ScalarResult([])
         books = list(self.books.values())
         statement = str(query)
         params = getattr(query.compile(), "params", {})
@@ -65,6 +67,8 @@ class FakeSession:
         return ScalarResult(sorted(books, key=lambda book: book.id))
 
     async def scalar(self, query: object) -> Book | int | None:
+        if "book_reservations" in str(query):
+            return None
         if "count(" in str(query):
             return 0
         return next(iter(self.books.values()), None)

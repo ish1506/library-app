@@ -11,10 +11,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
+from app.models.book_reservation import BookReservation, ReservationStatus
 from app.models.user import User
 from app.routers.dependencies import get_current_user, require_admin, require_user
 from app.schemas.book import BookCreate, BookListQuery, BookResponse, BookUpdate
 from app.schemas.book_loan import BookLoanResponse
+from app.schemas.book_reservation import BookReservationResponse
+from app.services.reservations import (
+    active_counts,
+    expire_ready_reservations,
+    timestamp,
+)
 
 router = APIRouter(prefix="/books", tags=["books"])
 logger = logging.getLogger("uvicorn.error.library_api")
@@ -44,6 +51,13 @@ def loan_history_conflict(error: IntegrityError) -> bool:
     return (
         getattr(getattr(error.orig, "diag", None), "constraint_name", None)
         == "fk_book_loans_book_id_books"
+    )
+
+
+def reservation_conflict(error: IntegrityError) -> bool:
+    return (
+        getattr(getattr(error.orig, "diag", None), "constraint_name", None)
+        == "fk_book_reservations_book_id_books"
     )
 
 
@@ -129,6 +143,7 @@ async def update_book(
         )
 
     updates = payload.model_dump(exclude_unset=True)
+    await expire_ready_reservations(db, book)
     if "total_copies" in updates:
         active_loan_count = (
             await db.scalar(
@@ -139,8 +154,19 @@ async def update_book(
             )
             or 0
         )
+        ready_reservation_count = (
+            await db.scalar(
+                select(func.count(BookReservation.id)).where(
+                    BookReservation.book_id == book_id,
+                    BookReservation.status == ReservationStatus.READY,
+                )
+            )
+            or 0
+        )
         checked_out_copies = book.total_copies - book.available_copies
-        minimum_total_copies = max(active_loan_count, checked_out_copies)
+        minimum_total_copies = max(
+            active_loan_count + ready_reservation_count, checked_out_copies
+        )
         if updates["total_copies"] < minimum_total_copies:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
@@ -186,6 +212,11 @@ async def delete_book(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Book has loan history and cannot be deleted",
             ) from error
+        if reservation_conflict(error):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Book has reservations and cannot be deleted",
+            ) from error
         raise
     logger.debug("book_deleted book_id=%s", book_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -206,7 +237,9 @@ async def borrow_book(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
         )
+    await expire_ready_reservations(db, book)
     if book.available_copies <= 0:
+        await db.commit()
         logger.info(
             "book_borrow_rejected book_id=%s user_id=%s reason=unavailable",
             book_id,
@@ -223,6 +256,7 @@ async def borrow_book(
         )
     )
     if active_loan is not None:
+        await db.commit()
         logger.info(
             "book_borrow_rejected book_id=%s user_id=%s reason=active_loan loan_id=%s",
             book_id,
@@ -253,6 +287,83 @@ async def borrow_book(
         loan.id,
     )
     return loan
+
+
+@router.post(
+    "/{book_id}/reservations",
+    response_model=BookReservationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def reserve_book(
+    book_id: int,
+    user: User = USER_DEPENDENCY,
+    db: AsyncSession = DB_DEPENDENCY,
+) -> BookReservation:
+    book = await db.scalar(select(Book).where(Book.id == book_id).with_for_update())
+    if book is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
+        )
+    now = timestamp()
+    await expire_ready_reservations(db, book, now)
+    if book.available_copies > 0:
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Book is available"
+        )
+    active_loan, active_reservations, _ = await active_counts(db, book_id)
+    if (
+        await db.scalar(
+            select(BookLoan).where(
+                BookLoan.book_id == book_id,
+                BookLoan.user_id == user.id,
+                BookLoan.status == LoanStatus.BORROWED,
+            )
+        )
+        is not None
+    ):
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Active loan already exists"
+        )
+    if (
+        await db.scalar(
+            select(BookReservation).where(
+                BookReservation.book_id == book_id,
+                BookReservation.user_id == user.id,
+                BookReservation.status.in_(
+                    (ReservationStatus.PENDING, ReservationStatus.READY)
+                ),
+            )
+        )
+        is not None
+    ):
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Active reservation already exists",
+        )
+    if active_reservations >= active_loan:
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Reservation queue is full"
+        )
+    reservation = BookReservation(
+        book_id=book_id,
+        user_id=user.id,
+        created_at_timestamp=now,
+        status=ReservationStatus.PENDING,
+    )
+    db.add(reservation)
+    await db.commit()
+    await db.refresh(reservation)
+    logger.info(
+        "reservation_created reservation_id=%s book_id=%s user_id=%s",
+        reservation.id,
+        book_id,
+        user.id,
+    )
+    return reservation
 
 
 @router.get("/{book_id}/loans", response_model=list[BookLoanResponse])

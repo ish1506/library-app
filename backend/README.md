@@ -57,6 +57,13 @@ Additional pytest arguments can be passed through, such as
 are required. `.env` is local-only and must not be committed; use `.env.example`
 as the safe template.
 
+Reservations use `RESERVATION_HOLD_SECONDS` for the duration of a ready hold;
+the default is `86400` seconds and the value must be positive. The in-process
+expiry worker checks every `RESERVATION_WORKER_INTERVAL_SECONDS` seconds,
+defaulting to `60`. Each reservation mutation also expires relevant holds, so
+correctness does not depend on the worker. A multi-process deployment needs a
+database-backed scheduler or lease.
+
 ## Provision an account
 
 Accounts are provisioned locally with the non-public seed helper, not through an
@@ -193,7 +200,7 @@ status `1` for `BORROWED` and `2` for `RETURNED`.
 Unavailable books and duplicate active loans return `409`. A returned loan
 cannot be returned again, and a book with loan history cannot be deleted.
 Overdue loans remain active until returned. Reservations, renewal, late fees,
-and per-copy inventory are not supported.
+and per-copy inventory are not supported by the loan endpoints.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/books/$bookId/loans \
@@ -208,3 +215,40 @@ curl -X POST http://127.0.0.1:8000/loans/$loanId/return \
 curl http://127.0.0.1:8000/books/$bookId/loans \
   -H 'Authorization: Bearer <admin-token>'
 ```
+
+## Reservations and notifications
+
+Reservations require a `USER` bearer token and are available only when a title
+has no immediately available copy. A user cannot reserve a title they already
+loan or reserve, and the active queue is limited to the number of active loans
+for that title. These conflicts return `409`. Reservations are served in
+creation order. Returning a loan promotes the oldest pending reservation to a
+one-day ready hold and creates one unread in-app notification.
+
+```bash
+curl -X POST http://127.0.0.1:8000/books/$bookId/reservations \
+  -H 'Authorization: Bearer <user-token>'
+
+curl http://127.0.0.1:8000/reservations/me \
+  -H 'Authorization: Bearer <user-token>'
+
+curl -X POST http://127.0.0.1:8000/reservations/$reservationId/confirm \
+  -H 'Authorization: Bearer <user-token>'
+
+curl -X DELETE http://127.0.0.1:8000/reservations/$reservationId \
+  -H 'Authorization: Bearer <user-token>'
+
+curl --get 'http://127.0.0.1:8000/notifications?unread_only=true&limit=50' \
+  -H 'Authorization: Bearer <user-token>'
+
+curl -X PATCH http://127.0.0.1:8000/notifications/$notificationId/read \
+  -H 'Authorization: Bearer <user-token>'
+```
+
+`GET /notifications` is caller-scoped, newest-first, and bounded to at most
+100 results per request. `unread_only` defaults to `true`. Confirming a ready
+reservation creates the loan without decrementing `available_copies`, because
+the ready hold already owns that capacity. Cancelling or expiring a ready hold
+promotes the next pending reservation or releases one available copy. Terminal
+actions return `409`; admin and unauthenticated callers receive the standard
+`403` and `401` responses respectively.
