@@ -6,7 +6,9 @@ describe('login', () => {
 
   it('posts the API contract and returns a token on success', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ access_token: 'token', token_type: 'bearer' }), { status: 200 }),
+      new Response(JSON.stringify({ access_token: 'token', token_type: 'bearer' }), {
+        status: 200,
+      }),
     )
     vi.stubGlobal('fetch', fetchMock)
 
@@ -22,9 +24,14 @@ describe('login', () => {
   })
 
   it('normalizes invalid credentials', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ detail: 'Invalid username or password' }), { status: 401 }),
-    ))
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ detail: 'Invalid username or password' }), { status: 401 }),
+        ),
+    )
 
     await expect(login({ username: 'alice', password: 'wrong' })).resolves.toEqual({
       ok: false,
@@ -33,9 +40,10 @@ describe('login', () => {
   })
 
   it('reports validation, network, and non-JSON failures safely', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ detail: [] }), { status: 422 }),
-    ))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response(JSON.stringify({ detail: [] }), { status: 422 })),
+    )
     await expect(login({ username: 'alice', password: 'password' })).resolves.toMatchObject({
       ok: false,
       message: expect.stringContaining('invalid'),

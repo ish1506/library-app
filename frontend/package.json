@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "format": "biome format --write src vite.config.ts",
+    "format:check": "biome format src vite.config.ts",
     "lint": "oxlint",
     "test": "vitest run",
     "preview": "vite preview"
@@ -15,6 +17,7 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.13",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^24.13.3",

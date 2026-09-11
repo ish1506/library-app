@@ -1,5 +1,5 @@
 export const NotificationType = { RESERVATION_READY: 1 } as const
-export type NotificationTypeValue = typeof NotificationType[keyof typeof NotificationType]
+export type NotificationTypeValue = (typeof NotificationType)[keyof typeof NotificationType]
 
 export type Notification = {
   id: number
@@ -28,7 +28,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isNotification(value: unknown): value is Notification {
-  return isRecord(value) &&
+  return (
+    isRecord(value) &&
     typeof value.id === 'number' &&
     typeof value.user_id === 'number' &&
     (value.reservation_id === null || typeof value.reservation_id === 'number') &&
@@ -36,6 +37,7 @@ export function isNotification(value: unknown): value is Notification {
     (value.read_at_timestamp === null || typeof value.read_at_timestamp === 'number') &&
     value.type === NotificationType.RESERVATION_READY &&
     isRecord(value.payload)
+  )
 }
 
 async function readJson(response: Response): Promise<unknown> {
@@ -62,23 +64,37 @@ async function request<T>(path: string, token: string, method: 'GET' | 'PATCH'):
       headers: { Authorization: `Bearer ${token}` },
     })
   } catch {
-    throw new NotificationsApiError(0, 'Unable to reach the library service. Check that it is running and try again.')
+    throw new NotificationsApiError(
+      0,
+      'Unable to reach the library service. Check that it is running and try again.',
+    )
   }
   const body = await readJson(response)
-  if (!response.ok) throw new NotificationsApiError(response.status, errorMessage(response.status, body))
+  if (!response.ok)
+    throw new NotificationsApiError(response.status, errorMessage(response.status, body))
   return body as T
 }
 
 export async function listUnreadNotifications(token: string): Promise<Notification[]> {
   const body = await request<unknown>('/notifications?unread_only=true&limit=50', token, 'GET')
   if (!Array.isArray(body) || !body.every(isNotification)) {
-    throw new NotificationsApiError(0, 'The library service returned an unexpected notifications response.')
+    throw new NotificationsApiError(
+      0,
+      'The library service returned an unexpected notifications response.',
+    )
   }
   return body
 }
 
-export async function markNotificationRead(token: string, notificationId: number): Promise<Notification> {
+export async function markNotificationRead(
+  token: string,
+  notificationId: number,
+): Promise<Notification> {
   const body = await request<unknown>(`/notifications/${notificationId}/read`, token, 'PATCH')
-  if (!isNotification(body)) throw new NotificationsApiError(0, 'The library service returned an unexpected notification response.')
+  if (!isNotification(body))
+    throw new NotificationsApiError(
+      0,
+      'The library service returned an unexpected notification response.',
+    )
   return body
 }

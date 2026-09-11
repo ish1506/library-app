@@ -18,9 +18,7 @@ type ValidationError = {
   detail?: Array<{ loc: Array<string | number>; msg: string; type: string }>
 }
 
-export type LoginResult =
-  | { ok: true; accessToken: string }
-  | { ok: false; message: string }
+export type LoginResult = { ok: true; accessToken: string } | { ok: false; message: string }
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
@@ -62,7 +60,10 @@ export async function login(credentials: LoginCredentials): Promise<LoginResult>
     })
   } catch {
     debugLog('login_request_failed', { reason: 'network' })
-    return { ok: false, message: 'Unable to reach the library service. Check that it is running and try again.' }
+    return {
+      ok: false,
+      message: 'Unable to reach the library service. Check that it is running and try again.',
+    }
   }
 
   const body = await readJson(response)
@@ -76,17 +77,24 @@ export async function login(credentials: LoginCredentials): Promise<LoginResult>
     debugLog('login_request_failed', { reason: 'invalid_credentials', statusCode: response.status })
     return {
       ok: false,
-      message: isApiError(body) && typeof body.detail === 'string'
-        ? body.detail
-        : 'Invalid username or password',
+      message:
+        isApiError(body) && typeof body.detail === 'string'
+          ? body.detail
+          : 'Invalid username or password',
     }
   }
 
   if (response.status === 422 && isValidationError(body)) {
     debugLog('login_request_failed', { reason: 'validation', statusCode: response.status })
-    return { ok: false, message: 'The sign-in request was invalid. Check your details and try again.' }
+    return {
+      ok: false,
+      message: 'The sign-in request was invalid. Check your details and try again.',
+    }
   }
 
   debugLog('login_request_failed', { reason: 'unexpected_response', statusCode: response.status })
-  return { ok: false, message: 'The library service could not complete your sign-in. Please try again.' }
+  return {
+    ok: false,
+    message: 'The library service could not complete your sign-in. Please try again.',
+  }
 }
