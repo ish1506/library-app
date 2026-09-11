@@ -76,9 +76,9 @@ If a formatter changes files, stage the changes and commit again.
 Create a PostgreSQL database, then configure and migrate the backend:
 
 ```bash
-cd backend
 cp .env.example .env
-# Set DATABASE_URL and replace JWT_SECRET_KEY with a random secret in .env.
+# Set POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, and JWT_SECRET_KEY in .env.
+cd backend
 uv run alembic upgrade head
 uv run python scripts/seed_user.py alice --password 'password' --role USER
 uv run python scripts/seed_user.py admin --password 'admin' --role ADMIN
@@ -118,8 +118,7 @@ data is retained in the `postgres_data` named volume.
 
 ```bash
 cp .env.example .env
-# Replace POSTGRES_PASSWORD, DATABASE_URL, and JWT_SECRET_KEY in .env.
-# DATABASE_URL must use the Compose database hostname: @db:5432.
+# Replace POSTGRES_PASSWORD and JWT_SECRET_KEY in .env.
 docker compose up --build
 ```
 

@@ -1,28 +1,28 @@
 # Graph Report - library-app  (2026-09-11)
 
 ## Corpus Check
-- 107 files · ~50,383 words
+- 108 files · ~50,392 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 851 nodes · 1445 edges · 79 communities (65 shown, 14 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 71 edges (avg confidence: 0.61)
+- 858 nodes · 1346 edges · 90 communities (67 shown, 23 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.7)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6565754b`
+- Built from commit: `81f425f6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - books.py
-- routers/auth.py
+- schemas/auth.py
 - devDependencies
-- test_books.py
+- FakeSession
 - BookLoan
 - App.tsx
 - compilerOptions
-- User
+- routers/auth.py
 - seed_books.py
 - formatter
 - books.ts
@@ -36,6 +36,7 @@
 - tsconfig.json
 - dev.sh
 - test.sh
+- seed_user.py
 - library-backend
 - Admin Book Catalogue API
 - Book Catalogue Search and Date Filtering API
@@ -65,64 +66,74 @@
 - compilerOptions
 - Books Catalogue Sorting
 - Books Sorting Backend Implementation
-- log_request
+- main.py
 - notifications.ts
 - BookLoan
 - BookReservation
 - BookReservation
 - Library App
-- calculate_late_fee_cents
+- test_late_fees.py
 - Library Frontend
 - Development Setup
 - patch
 - Reservation Lifecycle
 - BookLoan
 - BookReservation
+- test_book_loans.py
+- BookCreate
+- BookListQuery
+- BookUpdate
+- SortBy
+- test_book_reservations.py
+- test_login.py
+- test_database.py
+- get
+- Book
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 68 edges
+1. `User` - 30 edges
 2. `App()` - 28 edges
-3. `FakeSession` - 26 edges
-4. `Role` - 24 edges
-5. `BookLoan` - 19 edges
-6. `BookReservation` - 19 edges
-7. `compilerOptions` - 18 edges
-8. `timestamp()` - 15 edges
-9. `expire_ready_reservations()` - 15 edges
-10. `client_for()` - 15 edges
+3. `FakeSession` - 24 edges
+4. `compilerOptions` - 18 edges
+5. `client_for()` - 15 edges
+6. `BookReservation` - 15 edges
+7. `compilerOptions` - 15 edges
+8. `timestamp()` - 13 edges
+9. `expire_ready_reservations()` - 13 edges
+10. `BookLoan` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `AuthSession` --uses--> `BookLoan`  [INFERRED]
-  backend/tests/test_book_loans.py → backend/app/models/book_loan.py
-- `LoanFixture` --uses--> `BookLoan`  [INFERRED]
-  backend/tests/test_book_loans.py → backend/app/models/book_loan.py
-- `AuthSession` --uses--> `BookLoan`  [INFERRED]
-  backend/tests/test_book_reservations.py → backend/app/models/book_loan.py
-- `ReservationFixture` --uses--> `BookLoan`  [INFERRED]
-  backend/tests/test_book_reservations.py → backend/app/models/book_loan.py
-- `AuthSession` --uses--> `BookReservation`  [INFERRED]
-  backend/tests/test_book_reservations.py → backend/app/models/book_reservation.py
+- `Book` --uses--> `Base`  [INFERRED]
+  backend/app/models/book.py → backend/app/database.py
+- `test_shutdown_disposes_async_engine()` --indirect_call--> `main()`  [INFERRED]
+  backend/tests/test_lifespan.py → backend/scripts/seed_user.py
+- `BookLoan` --uses--> `LoanStatus`  [INFERRED]
+  backend/app/models/book_loan.py → backend/app/models/enums.py
+- `BookReservation` --uses--> `ReservationStatus`  [INFERRED]
+  backend/app/models/book_reservation.py → backend/app/models/enums.py
+- `BookLoanResponse` --uses--> `LoanStatus`  [INFERRED]
+  backend/app/schemas/book_loan.py → backend/app/models/enums.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (79 total, 14 thin omitted)
+## Communities (90 total, 23 thin omitted)
 
 ### Community 0 - "books.py"
-Cohesion: 0.06
-Nodes (75): get_db(), AsyncSession, BookLoan, Base, BookReservation, Base, LoanStatus, NotificationType (+67 more)
+Cohesion: 0.07
+Nodes (81): get_db(), AsyncSession, BookLoan, Base, BookReservation, Base, LoanStatus, NotificationType (+73 more)
 
-### Community 1 - "routers/auth.py"
-Cohesion: 0.15
-Nodes (12): get_settings(), Settings, login(), AsyncSession, post, LoginRequest, BaseModel, TokenResponse (+4 more)
+### Community 1 - "schemas/auth.py"
+Cohesion: 0.67
+Nodes (3): LoginRequest, BaseModel, TokenResponse
 
 ### Community 2 - "devDependencies"
 Cohesion: 0.05
 Nodes (42): @biomejs/biome, dependencies, react, react-dom, devDependencies, @biomejs/biome, jsdom, oxlint (+34 more)
 
-### Community 3 - "test_books.py"
-Cohesion: 0.16
-Nodes (22): book_payload(), client_for(), ConstraintDiagnostic, DuplicateIsbnError, FakeSession, Book, TestClient, ScalarResult (+14 more)
+### Community 3 - "FakeSession"
+Cohesion: 0.15
+Nodes (23): book_payload(), client_for(), ConstraintDiagnostic, DuplicateIsbnError, FakeSession, TestClient, User, ScalarResult (+15 more)
 
 ### Community 5 - "App.tsx"
 Cohesion: 0.10
@@ -132,13 +143,13 @@ Nodes (20): BookReservation, App(), availability(), DateFilterDraft, emptyDateFi
 Cohesion: 0.08
 Nodes (24): compilerOptions, allowArbitraryExtensions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection (+16 more)
 
-### Community 7 - "User"
-Cohesion: 0.07
-Nodes (39): Role, Notification, Base, Base, User, get_current_user(), AsyncSession, list_notifications() (+31 more)
+### Community 7 - "routers/auth.py"
+Cohesion: 0.11
+Nodes (13): get_settings(), Settings, Base, Book, login(), AsyncSession, post, create_access_token() (+5 more)
 
 ### Community 8 - "seed_books.py"
-Cohesion: 0.14
-Nodes (27): Base, Book, LateFeePolicy, LibraryPolicy, load_policy(), BaseModel, ReservationPolicy, acquire_manifest() (+19 more)
+Cohesion: 0.17
+Nodes (24): LateFeePolicy, LibraryPolicy, load_policy(), BaseModel, ReservationPolicy, acquire_manifest(), choose_isbn(), comparable_title() (+16 more)
 
 ### Community 9 - "formatter"
 Cohesion: 0.09
@@ -276,9 +287,9 @@ Nodes (10): Books Catalogue Sorting, Current State, Decisions, Diagram, Files an
 Cohesion: 0.33
 Nodes (5): Blockers and Assumptions, Books Sorting Backend Implementation, Deviations, Files, Validation
 
-### Community 64 - "log_request"
-Cohesion: 0.40
-Nodes (5): health_check(), log_request(), get, middleware, Request
+### Community 64 - "main.py"
+Cohesion: 0.32
+Nodes (7): health_check(), lifespan(), log_request(), reservation_expiry_worker(), get, middleware, Request
 
 ### Community 65 - "notifications.ts"
 Cohesion: 0.20
@@ -287,10 +298,6 @@ Nodes (13): apiBaseUrl, errorMessage(), isNotification(), isRecord(), listUnread
 ### Community 70 - "Library App"
 Cohesion: 0.20
 Nodes (10): Assumptions and Design Decisions, Catalogue Management, Documentation, Lending, Library App, Out of Scope and Potential Improvements, Reservations and Notifications, Supported Features (+2 more)
-
-### Community 71 - "calculate_late_fee_cents"
-Cohesion: 0.53
-Nodes (4): calculate_late_fee_cents(), test_late_fee_uses_complete_periods(), test_late_fee_uses_return_cutoff_and_rejects_invalid_rate(), parametrize
 
 ### Community 72 - "Library Frontend"
 Cohesion: 0.33
@@ -304,25 +311,37 @@ Nodes (6): Configure the Backend, Development Setup, Install Dependencies, Prere
 Cohesion: 0.50
 Nodes (4): Allocation Rules, Allowed Transitions, Reservation Lifecycle, States
 
+### Community 79 - "test_book_loans.py"
+Cohesion: 0.27
+Nodes (8): AuthSession, loan_fixture(), LoanFixture, fixture, User, test_concurrent_borrowing_allows_only_final_copy(), test_loan_lifecycle_inventory_and_history(), test_loan_routes_require_authentication_and_roles()
+
+### Community 84 - "test_book_reservations.py"
+Cohesion: 0.32
+Nodes (9): AuthSession, headers(), fixture, User, reservation_fixture(), ReservationFixture, test_concurrent_reservations_allocate_one_queue_slot(), test_reservation_lifecycle_notifications_and_expiry() (+1 more)
+
+### Community 85 - "test_login.py"
+Cohesion: 0.32
+Nodes (8): client_for(), FakeSession, TestClient, User, test_login_logs_request_without_credentials(), test_malformed_login_body_is_rejected(), test_unknown_and_wrong_password_have_identical_401_responses(), test_user_and_admin_can_login()
+
 ## Knowledge Gaps
-- **326 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `library-backend`, `dev.sh script`, `test.sh script` (+321 more)
+- **327 isolated node(s):** `ConstraintDiagnostic`, `$schema`, `.opencode/plugins/graphify.js`, `library-backend`, `dev.sh script` (+322 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `User` connect `User` to `books.py`, `routers/auth.py`, `test_books.py`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `FakeSession` connect `test_books.py` to `User`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Are the 10 inferred relationships involving `User` (e.g. with `Role` and `AuthSession`) actually correct?**
-  _`User` has 10 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 2 inferred relationships involving `FakeSession` (e.g. with `Role` and `User`) actually correct?**
-  _`FakeSession` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 10 inferred relationships involving `Role` (e.g. with `User` and `AuthSession`) actually correct?**
-  _`Role` has 10 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 5 inferred relationships involving `BookLoan` (e.g. with `LoanStatus` and `AuthSession`) actually correct?**
-  _`BookLoan` has 5 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `$schema`, `.opencode/plugins/graphify.js`, `library-backend` to the rest of the system?**
-  _326 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `User` connect `books.py` to `routers/auth.py`?**
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
+- **Why does `BookListQuery` connect `BookListQuery` to `books.py`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **What connects `ConstraintDiagnostic`, `$schema`, `.opencode/plugins/graphify.js` to the rest of the system?**
+  _327 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `books.py` be split into smaller, more focused modules?**
+  _Cohesion score 0.06690511256048812 - nodes in this community are weakly interconnected._
+- **Should `devDependencies` be split into smaller, more focused modules?**
+  _Cohesion score 0.046511627906976744 - nodes in this community are weakly interconnected._
+- **Should `FakeSession` be split into smaller, more focused modules?**
+  _Cohesion score 0.1492063492063492 - nodes in this community are weakly interconnected._
+- **Should `App.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.10256410256410256 - nodes in this community are weakly interconnected._

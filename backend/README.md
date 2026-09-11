@@ -16,19 +16,24 @@ sudo -u postgres createuser --login --pwprompt library_app
 sudo -u postgres createdb --owner=library_app library_db
 ```
 
-Enter a password when prompted by `createuser`, then use it in `.env`:
+Enter a password when prompted by `createuser`, then set the same values in the
+root `.env` file:
 
 ```env
-DATABASE_URL=postgresql+psycopg://library_app:<password>@localhost:5432/library_db
+POSTGRES_DB=library_db
+POSTGRES_USER=library_app
+POSTGRES_PASSWORD=<password>
 ```
 
 From the `backend` directory, install dependencies, configure the environment,
 create the database schema, and start the API:
 
 ```bash
-uv sync
+cd ..
 cp .env.example .env
-# Set DATABASE_URL to a PostgreSQL database and JWT_SECRET_KEY to a random secret.
+cd backend
+uv sync
+# Set POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, and JWT_SECRET_KEY in ../.env.
 uv run alembic upgrade head
 ./scripts/dev.sh
 ```
@@ -69,17 +74,19 @@ Additional pytest arguments can be passed through, such as
 
 ## Configuration
 
-`DATABASE_URL` must be a PostgreSQL SQLAlchemy URL, for example
-`postgresql+psycopg://library_app:password@localhost:5432/library_db`.
-`JWT_SECRET_KEY` must be a cryptographically random signing secret. Both values
-are required. On Linux, generate a suitable secret with:
+For local execution, the root `.env` file requires `POSTGRES_DB`,
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, and `JWT_SECRET_KEY`. The backend builds
+its local `postgresql+psycopg` URL using `localhost:5432`. Set `DATABASE_URL`
+instead only when connecting to a separately configured database. `JWT_SECRET_KEY`
+must be a cryptographically random signing secret. On Linux, generate one with:
 
 ```bash
 openssl rand -hex 32
 ```
 
-Set `JWT_SECRET_KEY` in `.env` to the printed value. `.env` is local-only and
-must not be committed; use `.env.example` as the safe template. Shared late-fee
+Set `JWT_SECRET_KEY` in the root `.env` to the printed value. `.env` is
+local-only and must not be committed; use the root `.env.example` as the safe
+template. Shared late-fee
 configuration is committed in `config/library.yaml`;
 `late_fees.daily_rate_cents` must be a positive integer.
 The policy is validated during startup and migration, and each book snapshots

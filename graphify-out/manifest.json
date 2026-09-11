@@ -75,9 +75,9 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "backend/app/routers/auth.py": {
-    "mtime": 1789025780.694469,
-    "ast_hash": "24d7a832e696583236c682f0f0b7156c",
-    "semantic_hash": "24d7a832e696583236c682f0f0b7156c"
+    "mtime": 1789105629.1555278,
+    "ast_hash": "d445ea2b6ce11a2b032f575503ef57db",
+    "semantic_hash": ""
   },
   "backend/app/routers/books.py": {
     "mtime": 1789105471.3762088,
@@ -105,8 +105,8 @@
     "semantic_hash": "8ab33e57b562cb1dd3a656a6f6cfa979"
   },
   "backend/app/schemas/book.py": {
-    "mtime": 1789100070.3161604,
-    "ast_hash": "f4c0affa69720b6d1f34b3a54729d55a",
+    "mtime": 1789105682.424528,
+    "ast_hash": "fd982e67544b4b6a1166397dc1bd849f",
     "semantic_hash": ""
   },
   "backend/app/schemas/book_loan.py": {
@@ -120,13 +120,13 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "backend/app/services/auth.py": {
-    "mtime": 1789018640.3419428,
-    "ast_hash": "928a6da6dfa0ee20768b9101f8a9a5bc",
-    "semantic_hash": "928a6da6dfa0ee20768b9101f8a9a5bc"
+    "mtime": 1789105622.9102597,
+    "ast_hash": "c45e4affc9123c970cae759d871902c1",
+    "semantic_hash": ""
   },
   "backend/main.py": {
-    "mtime": 1789105465.8107233,
-    "ast_hash": "59f50c5891a3ce12dd2ae8d5d9aed0ef",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "3c25c6000111b8aba4be2ad7de41f607",
     "semantic_hash": ""
   },
   "backend/pyproject.toml": {
@@ -145,13 +145,13 @@
     "semantic_hash": "c17f8b8bc727925897b17ce68900308b"
   },
   "backend/scripts/seed_books.py": {
-    "mtime": 1789100070.3210669,
-    "ast_hash": "b9c1da1284f8a5ee062b8815a37e8566",
+    "mtime": 1789105622.9145968,
+    "ast_hash": "881deb7666aa999ae76d2a46f31e0cef",
     "semantic_hash": ""
   },
   "backend/scripts/seed_user.py": {
-    "mtime": 1789105465.811328,
-    "ast_hash": "11b93a8454aa50297a51fb2f61a055b5",
+    "mtime": 1789106921.9813077,
+    "ast_hash": "3a6eebf54cc7bfa84f3e080950e85d75",
     "semantic_hash": ""
   },
   "backend/scripts/test.sh": {
@@ -170,33 +170,33 @@
     "semantic_hash": "fda5ef555d4ddb7bf1b878221477c89f"
   },
   "backend/tests/test_auth_service.py": {
-    "mtime": 1789105465.8119125,
-    "ast_hash": "bd6de56dfbb660aa12b61d7086457250",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "a634151137a67cf6e590aae3cc1726f4",
     "semantic_hash": ""
   },
   "backend/tests/test_book_loans.py": {
-    "mtime": 1789105465.812778,
-    "ast_hash": "d8afa8b2a1c451854ffddf0f6aac963c",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "92df09684169e59a607ec45b5477c310",
     "semantic_hash": ""
   },
   "backend/tests/test_books.py": {
-    "mtime": 1789105465.8150244,
-    "ast_hash": "82c0f767d77b6047be9e61c364f877bd",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "4ab95045eacbd58005a5ea67a85d7664",
     "semantic_hash": ""
   },
   "backend/tests/test_database.py": {
-    "mtime": 1789105516.8264089,
-    "ast_hash": "cf820aa8f026a2135e98ff598b2980cc",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "cdf9c8e322b20ffc6bd9d71da6539b12",
     "semantic_hash": ""
   },
   "backend/tests/test_lifespan.py": {
-    "mtime": 1789019700.025067,
-    "ast_hash": "9addc4e83fcbd8a389d214a81b4a2674",
-    "semantic_hash": "9addc4e83fcbd8a389d214a81b4a2674"
+    "mtime": 1789106775.9680877,
+    "ast_hash": "57e6be556e50f784b5f6e519160b2c82",
+    "semantic_hash": ""
   },
   "backend/tests/test_login.py": {
-    "mtime": 1789105465.8174298,
-    "ast_hash": "adeb6f12ab416f8a4145dcefd25a777f",
+    "mtime": 1789106940.5068889,
+    "ast_hash": "5a2765e5dd132c7ff23c2f00f021b194",
     "semantic_hash": ""
   },
   "backend/tests/test_seed_books.py": {
@@ -465,8 +465,8 @@
     "semantic_hash": ""
   },
   "backend/tests/test_book_reservations.py": {
-    "mtime": 1789105465.813693,
-    "ast_hash": "ab9a0492e92712745e7520ae360dbd95",
+    "mtime": 1789106775.9724247,
+    "ast_hash": "e6c56dd953a0f56331ff264f264ff9a5",
     "semantic_hash": ""
   },
   "backend/alembic/versions/20260911_0008_add_late_fees.py": {
@@ -485,8 +485,8 @@
     "semantic_hash": ""
   },
   "backend/tests/test_late_fees.py": {
-    "mtime": 1789100070.3220618,
-    "ast_hash": "6601312b7c7371d21279922acf915992",
+    "mtime": 1789106775.9680877,
+    "ast_hash": "2d3005d39bf516982c269e6386a299bb",
     "semantic_hash": ""
   },
   "frontend/src/api/notifications.test.ts": {
@@ -552,6 +552,11 @@
   "backend/app/models/enums.py": {
     "mtime": 1789105420.2964797,
     "ast_hash": "a87784b47e57b9cae3d4bc881275a302",
+    "semantic_hash": ""
+  },
+  ".vscode/settings.json": {
+    "mtime": 1789106773.3485446,
+    "ast_hash": "aedfc209f8ee86499c3e70c3edea8f9d",
     "semantic_hash": ""
   }
 }
