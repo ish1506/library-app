@@ -1,16 +1,16 @@
-# Graph Report - library-app  (2026-09-11)
+# Graph Report - library-app-book-reservations  (2026-09-11)
 
 ## Corpus Check
-- 86 files · ~37,237 words
+- 92 files · ~39,114 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 658 nodes · 1043 edges · 59 communities (52 shown, 7 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 50 edges (avg confidence: 0.6)
+- 679 nodes · 1263 edges · 59 communities (52 shown, 7 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b9794c1b`
+- Built from commit: `a98b5c19`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,7 +19,7 @@
 - User
 - devDependencies
 - test_books.py
-- Library Application Product Requirements Document
+- HTTPException
 - App.tsx
 - compilerOptions
 - field_validator
@@ -56,34 +56,34 @@
 - Code Review 3: Frontend Catalogue Search and Date Filtering
 - Code Review 1: Async Database Client Refactor
 - Frontend Books Search Implementation
-- Bugs
+- log_request
 - opencode.json
 - Library App
 - Backend Agent Instructions
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 51 edges
+1. `User` - 67 edges
 2. `FakeSession` - 24 edges
-3. `Role` - 20 edges
-4. `App()` - 19 edges
-5. `compilerOptions` - 18 edges
-6. `Book` - 17 edges
-7. `compilerOptions` - 15 edges
-8. `Library Application Product Requirements Document` - 14 edges
-9. `create_access_token()` - 13 edges
-10. `client_for()` - 12 edges
+3. `Book` - 23 edges
+4. `Role` - 23 edges
+5. `App()` - 19 edges
+6. `BookReservation` - 18 edges
+7. `compilerOptions` - 18 edges
+8. `Base` - 17 edges
+9. `create_access_token()` - 15 edges
+10. `expire_ready_reservations()` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Book` --uses--> `Base`  [INFERRED]
-  backend/app/models/book.py → backend/app/database.py
-- `Role` --uses--> `Base`  [INFERRED]
-  backend/app/models/user.py → backend/app/database.py
+- `Notification` --uses--> `Base`  [INFERRED]
+  backend/app/models/notification.py → backend/app/database.py
 - `User` --uses--> `Base`  [INFERRED]
   backend/app/models/user.py → backend/app/database.py
 - `AuthSession` --uses--> `Book`  [INFERRED]
-  backend/tests/test_book_loans.py → backend/app/models/book.py
-- `LoanFixture` --uses--> `Book`  [INFERRED]
-  backend/tests/test_book_loans.py → backend/app/models/book.py
+  backend/tests/test_book_reservations.py → backend/app/models/book.py
+- `ReservationFixture` --uses--> `Book`  [INFERRED]
+  backend/tests/test_book_reservations.py → backend/app/models/book.py
+- `DuplicateIsbnError` --uses--> `Book`  [INFERRED]
+  backend/tests/test_books.py → backend/app/models/book.py
 
 ## Import Cycles
 - None detected.
@@ -91,24 +91,24 @@
 ## Communities (59 total, 7 thin omitted)
 
 ### Community 0 - "books.py"
-Cohesion: 0.06
-Nodes (56): get_settings(), Settings, Base, get_db(), AsyncSession, BookLoan, LoanStatus, book_search_vector() (+48 more)
+Cohesion: 0.08
+Nodes (58): get_settings(), Settings, Base, get_db(), AsyncSession, Book, BookLoan, LoanStatus (+50 more)
 
 ### Community 1 - "User"
-Cohesion: 0.12
-Nodes (30): Role, User, login(), AsyncSession, post, LoginRequest, BaseModel, TokenResponse (+22 more)
+Cohesion: 0.09
+Nodes (34): Notification, User, login(), AsyncSession, post, list_notifications(), mark_notification_read(), AsyncSession (+26 more)
 
 ### Community 2 - "devDependencies"
 Cohesion: 0.05
 Nodes (38): dependencies, react, react-dom, devDependencies, jsdom, oxlint, @testing-library/jest-dom, @testing-library/react (+30 more)
 
 ### Community 3 - "test_books.py"
-Cohesion: 0.15
-Nodes (20): Book, book_payload(), client_for(), ConstraintDiagnostic, DuplicateIsbnError, FakeSession, Book, TestClient (+12 more)
+Cohesion: 0.16
+Nodes (20): create_access_token(), book_payload(), client_for(), DuplicateIsbnError, FakeSession, Book, TestClient, ScalarResult (+12 more)
 
-### Community 4 - "Library Application Product Requirements Document"
-Cohesion: 0.06
-Nodes (32): Acceptance Criteria, Acceptance Criteria, Acceptance Criteria, Acceptance Criteria, Assumptions, Core Requirements, Core Requirements, Core Requirements (+24 more)
+### Community 4 - "HTTPException"
+Cohesion: 0.09
+Nodes (33): borrow_book(), create_book(), delete_book(), get_book(), isbn_conflict(), list_book_loans(), list_books(), loan_history_conflict() (+25 more)
 
 ### Community 5 - "App.tsx"
 Cohesion: 0.10
@@ -139,8 +139,8 @@ Cohesion: 0.22
 Nodes (14): apiBaseUrl, borrowBook(), errorMessage(), isBookLoan(), isRecord(), listBookLoans(), listMyLoans(), LoansApiError (+6 more)
 
 ### Community 12 - "Library Backend"
-Cohesion: 0.13
-Nodes (13): Book loans, Books catalogue, Configuration, Library Backend, Login, Provision an account, Requirements, Run locally (+5 more)
+Cohesion: 0.12
+Nodes (14): Book loans, Books catalogue, Configuration, Library Backend, Login, Provision an account, Requirements, Reservations and notifications (+6 more)
 
 ### Community 13 - "auth.ts"
 Cohesion: 0.19
@@ -234,33 +234,33 @@ Nodes (6): Code Review 1: Async Database Client Refactor, Findings, Plan Complia
 Cohesion: 0.33
 Nodes (5): Blockers/assumptions, Deviations, Files changed, Frontend Books Search Implementation, Validation
 
-### Community 54 - "Bugs"
-Cohesion: 0.50
-Nodes (3): Backend, Bugs, Frontend
+### Community 54 - "log_request"
+Cohesion: 0.40
+Nodes (5): health_check(), log_request(), get, middleware, Request
 
 ### Community 55 - "opencode.json"
 Cohesion: 0.50
 Nodes (3): plugin, $schema, .opencode/plugins/graphify.js
 
 ## Knowledge Gaps
-- **272 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `library-backend`, `dev.sh script`, `test.sh script` (+267 more)
+- **245 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `library-backend`, `dev.sh script`, `test.sh script` (+240 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `User` connect `User` to `books.py`, `test_books.py`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `Book` connect `test_books.py` to `books.py`, `seed_books.py`, `User`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `FakeSession` connect `test_books.py` to `User`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Are the 8 inferred relationships involving `User` (e.g. with `Base` and `AuthSession`) actually correct?**
-  _`User` has 8 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `User` connect `User` to `books.py`, `test_books.py`, `HTTPException`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+- **Why does `Book` connect `books.py` to `seed_books.py`, `User`, `test_books.py`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `FakeSession` connect `test_books.py` to `books.py`, `User`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Are the 10 inferred relationships involving `User` (e.g. with `Base` and `AuthSession`) actually correct?**
+  _`User` has 10 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 3 inferred relationships involving `FakeSession` (e.g. with `Book` and `Role`) actually correct?**
   _`FakeSession` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 8 inferred relationships involving `Role` (e.g. with `Base` and `AuthSession`) actually correct?**
-  _`Role` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `$schema`, `.opencode/plugins/graphify.js`, `library-backend` to the rest of the system?**
-  _272 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Are the 9 inferred relationships involving `Book` (e.g. with `Base` and `AuthSession`) actually correct?**
+  _`Book` has 9 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `Role` (e.g. with `Base` and `AuthSession`) actually correct?**
+  _`Role` has 10 INFERRED edges - model-reasoned connections that need verification._

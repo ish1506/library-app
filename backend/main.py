@@ -1,28 +1,71 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
-from app.database import async_engine
+from app.config import settings
+from app.database import AsyncSessionLocal, async_engine
+from app.models.book import Book
+from app.models.book_reservation import BookReservation, ReservationStatus
 from app.routers.auth import router as auth_router
 from app.routers.books import router as books_router
 from app.routers.loans import router as loans_router
+from app.routers.notifications import router as notifications_router
+from app.routers.reservations import router as reservations_router
+from app.services.reservations import expire_ready_reservations, timestamp
 from fastapi import FastAPI, Request
+from sqlalchemy import select
 
 logger = logging.getLogger("uvicorn.error.library_api")
 logger.setLevel(logging.DEBUG)
 
 
+async def reservation_expiry_worker() -> None:
+    while True:
+        await asyncio.sleep(settings.reservation_worker_interval_seconds)
+        try:
+            async with AsyncSessionLocal() as db:
+                book_ids = (
+                    await db.scalars(
+                        select(BookReservation.book_id)
+                        .where(
+                            BookReservation.status == ReservationStatus.READY,
+                            BookReservation.expires_at_timestamp <= timestamp(),
+                        )
+                        .distinct()
+                    )
+                ).all()
+                for book_id in book_ids:
+                    book = await db.scalar(
+                        select(Book).where(Book.id == book_id).with_for_update()
+                    )
+                    if book is not None:
+                        await expire_ready_reservations(db, book)
+                await db.commit()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("reservation_expiry_worker_iteration_failed")
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    yield
-    await async_engine.dispose()
+    worker = asyncio.create_task(reservation_expiry_worker())
+    try:
+        yield
+    finally:
+        worker.cancel()
+        await asyncio.gather(worker, return_exceptions=True)
+        await async_engine.dispose()
 
 
 app = FastAPI(title="Library API", version="0.1.0", lifespan=lifespan)
 app.include_router(auth_router)
 app.include_router(books_router)
 app.include_router(loans_router)
+app.include_router(reservations_router)
+app.include_router(notifications_router)
 
 
 @app.middleware("http")

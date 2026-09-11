@@ -1,6 +1,5 @@
 import logging
 from collections.abc import Sequence
-from time import time
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -12,6 +11,7 @@ from app.models.book_loan import BookLoan, LoanStatus
 from app.models.user import User
 from app.routers.dependencies import require_user
 from app.schemas.book_loan import BookLoanResponse
+from app.services.reservations import promote_returned_copy, timestamp
 
 router = APIRouter(prefix="/loans", tags=["loans"])
 logger = logging.getLogger("uvicorn.error.library_api")
@@ -74,9 +74,10 @@ async def return_loan(
             status_code=status.HTTP_409_CONFLICT, detail="Loan already returned"
         )
 
+    now = timestamp()
     loan.status = LoanStatus.RETURNED
-    loan.returned_timestamp = int(time())
-    book.available_copies += 1
+    loan.returned_timestamp = now
+    await promote_returned_copy(db, book, now)
     await db.commit()
     await db.refresh(loan)
     return loan

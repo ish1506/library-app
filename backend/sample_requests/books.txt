@@ -63,3 +63,26 @@ curl --request POST '{{baseUrl}}/loans/{{loanId}}/return' \
 # List active loans for a book as an ADMIN.
 curl --request GET '{{baseUrl}}/books/{{bookId}}/loans' \
   --header 'Authorization: Bearer {{adminToken}}'
+
+# Reserve an unavailable title as a USER. Define reservationId.
+curl --request POST '{{baseUrl}}/books/{{bookId}}/reservations' \
+  --header 'Authorization: Bearer {{userToken}}'
+
+curl --request GET '{{baseUrl}}/reservations/me' \
+  --header 'Authorization: Bearer {{userToken}}'
+
+# Confirm or cancel a ready reservation.
+curl --request POST '{{baseUrl}}/reservations/{{reservationId}}/confirm' \
+  --header 'Authorization: Bearer {{userToken}}'
+
+curl --request DELETE '{{baseUrl}}/reservations/{{reservationId}}' \
+  --header 'Authorization: Bearer {{userToken}}'
+
+# Poll and mark notifications read.
+curl --get '{{baseUrl}}/notifications' \
+  --data-urlencode 'unread_only=true' \
+  --data-urlencode 'limit=50' \
+  --header 'Authorization: Bearer {{userToken}}'
+
+curl --request PATCH '{{baseUrl}}/notifications/{{notificationId}}/read' \
+  --header 'Authorization: Bearer {{userToken}}'
