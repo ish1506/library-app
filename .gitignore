@@ -1,4 +1,6 @@
 # Graphify
+/.env
+
 # Graphify local/runtime state
 graphify-out/cache/
 graphify-out/cost.json

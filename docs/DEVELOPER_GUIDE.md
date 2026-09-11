@@ -26,6 +26,19 @@ of independently deployed services. PostgreSQL is the source of truth for
 users, books, loans, reservations, and notifications. The frontend never owns
 or calculates domain state such as availability or late fees.
 
+## Docker Runtime
+
+`docker compose up --build` starts the PostgreSQL database, applies Alembic
+migrations, loads the checked-in 100-book catalogue, then starts the FastAPI API
+and Nginx-served frontend. Copy the root `.env.example` to `.env` first and set
+the database credentials and `JWT_SECRET_KEY`; `DATABASE_URL` must use the
+Compose hostname `db`, not `localhost`.
+
+The `postgres_data` named volume retains database state between starts. Run
+`docker compose down --volumes` only when intentionally discarding that state.
+The frontend is exposed on `http://localhost:8080` and proxies application API
+paths to the backend, so no frontend API-origin environment variable is needed.
+
 ## Domain Model
 
 A `Book` represents a title and owns aggregate inventory counts; the system does

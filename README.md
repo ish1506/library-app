@@ -110,6 +110,40 @@ available at `http://127.0.0.1:8000`, its interactive documentation is at
 See [frontend/README.md](frontend/README.md) for frontend configuration,
 development behavior, and checks.
 
+### Run with Docker Compose
+
+Docker Compose starts PostgreSQL, applies Alembic migrations, loads the
+checked-in 100-book catalogue, then starts the API and frontend. The PostgreSQL
+data is retained in the `postgres_data` named volume.
+
+```bash
+cp .env.example .env
+# Replace POSTGRES_PASSWORD, DATABASE_URL, and JWT_SECRET_KEY in .env.
+# DATABASE_URL must use the Compose database hostname: @db:5432.
+docker compose up --build
+```
+
+Open `http://localhost:8080`. The frontend proxies API requests to the backend,
+so `VITE_API_BASE_URL` is not required. The API documentation is available at
+`http://localhost:8080/docs`.
+
+The catalogue loader uses `backend/seed_books.csv`, which contains 100 rows, and
+is idempotent: later `docker compose up` runs do not duplicate books. Accounts
+remain explicitly provisioned, as in the local setup:
+
+```bash
+docker compose exec backend uv run --no-sync python scripts/seed_user.py alice --password 'password' --role USER
+docker compose exec backend uv run --no-sync python scripts/seed_user.py admin --password 'admin' --role ADMIN
+```
+
+The example passwords are for local development only. To discard the database
+volume and initialize a new database, run:
+
+```bash
+docker compose down --volumes
+docker compose up --build
+```
+
 ### Run Checks
 
 Run the backend and frontend checks from the repository root:
