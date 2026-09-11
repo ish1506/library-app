@@ -66,7 +66,7 @@ curl --request GET '{{baseUrl}}/loans/me' \
 curl --request POST '{{baseUrl}}/loans/{{loanId}}/return' \
   --header 'Authorization: Bearer {{userToken}}'
 
-# List active loans for a book as an ADMIN.
+# List the loan history for a book as an ADMIN.
 curl --request GET '{{baseUrl}}/books/{{bookId}}/loans' \
   --header 'Authorization: Bearer {{adminToken}}'
 

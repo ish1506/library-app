@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff-format
+        files: ^backend/.*\.py$
+
+  - repo: local
+    hooks:
+      - id: biome-format
+        name: biome format
+        entry: >-
+          bash -c 'cd frontend && for file; do biome format --write
+          --files-ignore-unknown=true --no-errors-on-unmatched
+          "${file#frontend/}"; done' --
+        language: node
+        additional_dependencies: ["@biomejs/biome@2.5.13"]
+        files: ^frontend/(src/.*\.(js|jsx|ts|tsx)|vite\.config\.ts)$
