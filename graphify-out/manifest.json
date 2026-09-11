@@ -1,0 +1,442 @@
+{
+  "backend/alembic/env.py": {
+    "mtime": 1789033831.3344176,
+    "ast_hash": "0b00fbebce21021e9f9daa658c0f0a23",
+    "semantic_hash": "0b00fbebce21021e9f9daa658c0f0a23"
+  },
+  "backend/alembic/versions/20260909_0001_create_users.py": {
+    "mtime": 1789018640.3374605,
+    "ast_hash": "6364645e99bc9dab66193dc70c002077",
+    "semantic_hash": "6364645e99bc9dab66193dc70c002077"
+  },
+  "backend/alembic/versions/20260910_0002_create_books.py": {
+    "mtime": 1789023983.9983764,
+    "ast_hash": "04e4fb399ce294ee2b5ef83ee2bc21d7",
+    "semantic_hash": "04e4fb399ce294ee2b5ef83ee2bc21d7"
+  },
+  "backend/alembic/versions/20260910_0003_allow_zero_total_copies.py": {
+    "mtime": 1789023983.9986007,
+    "ast_hash": "937e5df61abcae49bc56073a5feee99e",
+    "semantic_hash": "937e5df61abcae49bc56073a5feee99e"
+  },
+  "backend/alembic/versions/20260910_0004_create_book_loans.py": {
+    "mtime": 1789033831.3346744,
+    "ast_hash": "6f1cb001a49edd7b65306d073a0c69eb",
+    "semantic_hash": "6f1cb001a49edd7b65306d073a0c69eb"
+  },
+  "backend/alembic/versions/20260910_0005_add_books_search_indexes.py": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "57a86de32a5f793b84971e38999f6b1b",
+    "semantic_hash": "57a86de32a5f793b84971e38999f6b1b"
+  },
+  "backend/alembic/versions/20260910_0006_books_date_bigint.py": {
+    "mtime": 1789092503.0966678,
+    "ast_hash": "0425a72b54ea5fa872539986b35a3a96",
+    "semantic_hash": "0425a72b54ea5fa872539986b35a3a96"
+  },
+  "backend/app/__init__.py": {
+    "mtime": 1789018640.3374605,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/config.py": {
+    "mtime": 1789018640.3390398,
+    "ast_hash": "f3442c574d92e248986ac3125478da64",
+    "semantic_hash": "f3442c574d92e248986ac3125478da64"
+  },
+  "backend/app/database.py": {
+    "mtime": 1789019700.0238104,
+    "ast_hash": "b0d7612f079da2ae66be5bb57b3bf975",
+    "semantic_hash": "b0d7612f079da2ae66be5bb57b3bf975"
+  },
+  "backend/app/models/__init__.py": {
+    "mtime": 1789033831.3350813,
+    "ast_hash": "d36f0314fa2ff21f128e2483b2e8bfee",
+    "semantic_hash": "d36f0314fa2ff21f128e2483b2e8bfee"
+  },
+  "backend/app/models/book.py": {
+    "mtime": 1789092503.0970473,
+    "ast_hash": "fdd82462f8860a44888183c7b7ca83b9",
+    "semantic_hash": "fdd82462f8860a44888183c7b7ca83b9"
+  },
+  "backend/app/models/book_loan.py": {
+    "mtime": 1789033831.3354259,
+    "ast_hash": "4eeccd63eaf9f90d652c7063c0f6ed18",
+    "semantic_hash": "4eeccd63eaf9f90d652c7063c0f6ed18"
+  },
+  "backend/app/models/user.py": {
+    "mtime": 1789018640.3398218,
+    "ast_hash": "bf123f593931e4fd4f2b3dc627612a8b",
+    "semantic_hash": "bf123f593931e4fd4f2b3dc627612a8b"
+  },
+  "backend/app/routers/__init__.py": {
+    "mtime": 1789018640.3398218,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/routers/auth.py": {
+    "mtime": 1789025780.694469,
+    "ast_hash": "24d7a832e696583236c682f0f0b7156c",
+    "semantic_hash": "24d7a832e696583236c682f0f0b7156c"
+  },
+  "backend/app/routers/books.py": {
+    "mtime": 1789054567.3575716,
+    "ast_hash": "4b0472a7841916921d58b65e5c49aa2f",
+    "semantic_hash": "4b0472a7841916921d58b65e5c49aa2f"
+  },
+  "backend/app/routers/dependencies.py": {
+    "mtime": 1789033831.3360603,
+    "ast_hash": "54da257ef6ea7af544f76dbf37627d73",
+    "semantic_hash": "54da257ef6ea7af544f76dbf37627d73"
+  },
+  "backend/app/routers/loans.py": {
+    "mtime": 1789037804.1005847,
+    "ast_hash": "3e82937a5f55ebb26c07e6cf34a53fef",
+    "semantic_hash": "3e82937a5f55ebb26c07e6cf34a53fef"
+  },
+  "backend/app/schemas/__init__.py": {
+    "mtime": 1789033831.3366635,
+    "ast_hash": "ff2764199f8b7eea76c2b89ec86583bb",
+    "semantic_hash": "ff2764199f8b7eea76c2b89ec86583bb"
+  },
+  "backend/app/schemas/auth.py": {
+    "mtime": 1789018640.3411334,
+    "ast_hash": "8ab33e57b562cb1dd3a656a6f6cfa979",
+    "semantic_hash": "8ab33e57b562cb1dd3a656a6f6cfa979"
+  },
+  "backend/app/schemas/book.py": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "077ccfc38caaeda9e0bb2fc028be5a7e",
+    "semantic_hash": "077ccfc38caaeda9e0bb2fc028be5a7e"
+  },
+  "backend/app/schemas/book_loan.py": {
+    "mtime": 1789033831.336886,
+    "ast_hash": "2803e083f3ed47d5d7fe4a1236f0308b",
+    "semantic_hash": "2803e083f3ed47d5d7fe4a1236f0308b"
+  },
+  "backend/app/services/__init__.py": {
+    "mtime": 1789018640.3411334,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/services/auth.py": {
+    "mtime": 1789018640.3419428,
+    "ast_hash": "928a6da6dfa0ee20768b9101f8a9a5bc",
+    "semantic_hash": "928a6da6dfa0ee20768b9101f8a9a5bc"
+  },
+  "backend/main.py": {
+    "mtime": 1789037804.100927,
+    "ast_hash": "8c006ab721054166d98868e79dbe9c49",
+    "semantic_hash": "8c006ab721054166d98868e79dbe9c49"
+  },
+  "backend/pyproject.toml": {
+    "mtime": 1789018640.3419428,
+    "ast_hash": "279aca27673e262a4730c3f0a201603b",
+    "semantic_hash": "279aca27673e262a4730c3f0a201603b"
+  },
+  "backend/scripts/dev.sh": {
+    "mtime": 1789019234.0435555,
+    "ast_hash": "57c4cddd66d6657ab5adbb33d9cada9c",
+    "semantic_hash": "57c4cddd66d6657ab5adbb33d9cada9c"
+  },
+  "backend/scripts/refresh_openapi.py": {
+    "mtime": 1789020331.9513,
+    "ast_hash": "c17f8b8bc727925897b17ce68900308b",
+    "semantic_hash": "c17f8b8bc727925897b17ce68900308b"
+  },
+  "backend/scripts/seed_books.py": {
+    "mtime": 1789092503.0973837,
+    "ast_hash": "864b11ed534943806e25bf0a617cbccb",
+    "semantic_hash": "864b11ed534943806e25bf0a617cbccb"
+  },
+  "backend/scripts/seed_user.py": {
+    "mtime": 1789018640.3419428,
+    "ast_hash": "1f8d863de9d772b72388ac5e06d149c6",
+    "semantic_hash": "1f8d863de9d772b72388ac5e06d149c6"
+  },
+  "backend/scripts/test.sh": {
+    "mtime": 1789019234.0437932,
+    "ast_hash": "2183b53fdb13d5d53377273b77836b05",
+    "semantic_hash": "2183b53fdb13d5d53377273b77836b05"
+  },
+  "backend/seed_data/famous_books.json": {
+    "mtime": 1789092503.097721,
+    "ast_hash": "19b5979943818acbb3dabdba6963c604",
+    "semantic_hash": "19b5979943818acbb3dabdba6963c604"
+  },
+  "backend/tests/conftest.py": {
+    "mtime": 1789018640.3419428,
+    "ast_hash": "fda5ef555d4ddb7bf1b878221477c89f",
+    "semantic_hash": "fda5ef555d4ddb7bf1b878221477c89f"
+  },
+  "backend/tests/test_auth_service.py": {
+    "mtime": 1789018640.3447223,
+    "ast_hash": "ef83c070e220aa585a40ac88aa95b878",
+    "semantic_hash": "ef83c070e220aa585a40ac88aa95b878"
+  },
+  "backend/tests/test_book_loans.py": {
+    "mtime": 1789054567.3578875,
+    "ast_hash": "b31b47cf55aad3829a936eaca161c3d7",
+    "semantic_hash": "b31b47cf55aad3829a936eaca161c3d7"
+  },
+  "backend/tests/test_books.py": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "4ebd1dd25cd36d0330658a48ce66b7c7",
+    "semantic_hash": "4ebd1dd25cd36d0330658a48ce66b7c7"
+  },
+  "backend/tests/test_database.py": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "616fc5106f320b730f90164b5bf5c905",
+    "semantic_hash": "616fc5106f320b730f90164b5bf5c905"
+  },
+  "backend/tests/test_lifespan.py": {
+    "mtime": 1789019700.025067,
+    "ast_hash": "9addc4e83fcbd8a389d214a81b4a2674",
+    "semantic_hash": "9addc4e83fcbd8a389d214a81b4a2674"
+  },
+  "backend/tests/test_login.py": {
+    "mtime": 1789025829.832613,
+    "ast_hash": "0e2c90e491b992490ae7eb5401b12d63",
+    "semantic_hash": "0e2c90e491b992490ae7eb5401b12d63"
+  },
+  "backend/tests/test_seed_books.py": {
+    "mtime": 1789092503.0994713,
+    "ast_hash": "869c7153654fba3343e06102a39c00cf",
+    "semantic_hash": "869c7153654fba3343e06102a39c00cf"
+  },
+  "docs/openapi.json": {
+    "mtime": 1789092504.065052,
+    "ast_hash": "ab21798b71c48ee71c6446806339df73",
+    "semantic_hash": "ab21798b71c48ee71c6446806339df73"
+  },
+  "frontend/.oxlintrc.json": {
+    "mtime": 1789021950.5311527,
+    "ast_hash": "029f4905006c1fffd96bc863e2d98d3e",
+    "semantic_hash": "029f4905006c1fffd96bc863e2d98d3e"
+  },
+  "frontend/package.json": {
+    "mtime": 1789021950.5320268,
+    "ast_hash": "0b38e4fa2c687174d0796aa33b5a7bb8",
+    "semantic_hash": "0b38e4fa2c687174d0796aa33b5a7bb8"
+  },
+  "frontend/src/App.test.tsx": {
+    "mtime": 1789091929.5658493,
+    "ast_hash": "24b9fea5a9c6d7eb1c393f73bb794c8a",
+    "semantic_hash": "24b9fea5a9c6d7eb1c393f73bb794c8a"
+  },
+  "frontend/src/App.tsx": {
+    "mtime": 1789091929.5668194,
+    "ast_hash": "4c7d1d488dbed27e0717d7d9d731a2a9",
+    "semantic_hash": "4c7d1d488dbed27e0717d7d9d731a2a9"
+  },
+  "frontend/src/api/auth.test.ts": {
+    "mtime": 1789021950.534257,
+    "ast_hash": "fe2b5afcd7401256e45fe091dd653641",
+    "semantic_hash": "fe2b5afcd7401256e45fe091dd653641"
+  },
+  "frontend/src/api/auth.ts": {
+    "mtime": 1789025869.182606,
+    "ast_hash": "aa697fd48be86959bb7e5590f391a3db",
+    "semantic_hash": "aa697fd48be86959bb7e5590f391a3db"
+  },
+  "frontend/src/api/books.test.ts": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "d53b24b9c25e6857d42f12abbae6dfea",
+    "semantic_hash": "d53b24b9c25e6857d42f12abbae6dfea"
+  },
+  "frontend/src/api/books.ts": {
+    "mtime": 1789039283.4014633,
+    "ast_hash": "1fce7cd063314f877cbbabce52ec0e1c",
+    "semantic_hash": "1fce7cd063314f877cbbabce52ec0e1c"
+  },
+  "frontend/src/api/loans.test.ts": {
+    "mtime": 1789054567.3586545,
+    "ast_hash": "704325f61a32bc2c984c5a34dc5aeba5",
+    "semantic_hash": "704325f61a32bc2c984c5a34dc5aeba5"
+  },
+  "frontend/src/api/loans.ts": {
+    "mtime": 1789054567.358817,
+    "ast_hash": "b89c544b68ce80929c0e67faea0419b8",
+    "semantic_hash": "b89c544b68ce80929c0e67faea0419b8"
+  },
+  "frontend/src/debug.ts": {
+    "mtime": 1789024789.7311084,
+    "ast_hash": "b9d986f200057f1bddda883ddbb8f279",
+    "semantic_hash": "b9d986f200057f1bddda883ddbb8f279"
+  },
+  "frontend/src/main.tsx": {
+    "mtime": 1789021950.534817,
+    "ast_hash": "787e5a07efeb2bf6209d5937195f2f68",
+    "semantic_hash": "787e5a07efeb2bf6209d5937195f2f68"
+  },
+  "frontend/src/test/setup.ts": {
+    "mtime": 1789021950.534817,
+    "ast_hash": "f99e24608f920f37781b1850fc61cee6",
+    "semantic_hash": "f99e24608f920f37781b1850fc61cee6"
+  },
+  "frontend/tsconfig.app.json": {
+    "mtime": 1789021950.535666,
+    "ast_hash": "b8a5dbdd6e78551799349e526504c5d9",
+    "semantic_hash": "b8a5dbdd6e78551799349e526504c5d9"
+  },
+  "frontend/tsconfig.json": {
+    "mtime": 1789021950.5357554,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": "a3d39fa780ebff65444de257f291ce6c"
+  },
+  "frontend/tsconfig.node.json": {
+    "mtime": 1789021950.535851,
+    "ast_hash": "f9cb81ddcea69ffdab672fc8c48dca66",
+    "semantic_hash": "f9cb81ddcea69ffdab672fc8c48dca66"
+  },
+  "frontend/vite.config.ts": {
+    "mtime": 1789037204.2911077,
+    "ast_hash": "521293b55c8f70e7d7effbb33ae70576",
+    "semantic_hash": "521293b55c8f70e7d7effbb33ae70576"
+  },
+  ".opencode/opencode.json": {
+    "mtime": 1789093741.5319035,
+    "ast_hash": "a81ac798a8614cad34ca92f2028b323b",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1789032081.986115,
+    "ast_hash": "4e75d6e3a0b5ee848b826883536e0199",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "cc96c9e46fb15c2131716b927edd3d09",
+    "semantic_hash": ""
+  },
+  "backend/AGENTS.md": {
+    "mtime": 1789023983.997522,
+    "ast_hash": "70de6993eaa298cb48dc0ac23b40c177",
+    "semantic_hash": ""
+  },
+  "backend/README.md": {
+    "mtime": 1789092503.0963802,
+    "ast_hash": "28dbac95b826f5dce2234e760d5eceee",
+    "semantic_hash": ""
+  },
+  "backend/sample_requests/books.txt": {
+    "mtime": 1789039283.393448,
+    "ast_hash": "8815c8c6569283550c0eca7e51bf1689",
+    "semantic_hash": ""
+  },
+  "bugs.md": {
+    "mtime": 1789092040.768289,
+    "ast_hash": "60f66c7a201c845d4c505f84a704b87d",
+    "semantic_hash": ""
+  },
+  "docs/DEVELOPER_GUIDE.md": {
+    "mtime": 1789091771.1090336,
+    "ast_hash": "7165012b979025f18983bc953e9078df",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-book-loans-code-review-1.md": {
+    "mtime": 1789033831.3394773,
+    "ast_hash": "fd19e1aa91832a84da1d47765e3ffb06",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-book-loans-code-review-2.md": {
+    "mtime": 1789033831.33974,
+    "ast_hash": "722050f0585822586f220bf331f118c5",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-frontend-books-search-code-review-1.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "ffb24c9423165328f5e839238ca8f74b",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-frontend-books-search-code-review-2.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "4270ea3f02e0fb42310408cc52223884",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-frontend-books-search-code-review-3.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "63fbab5ca7e1846f7842965b1b04840c",
+    "semantic_hash": ""
+  },
+  "docs/implementation/2026-09-10-frontend-books-search-implementation-1.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "d3d7722b4c09bc315ba6e9dda3e1fc0b",
+    "semantic_hash": ""
+  },
+  "docs/implementation/async-database-client-code-review-1.md": {
+    "mtime": 1789019700.0280237,
+    "ast_hash": "cd561492701c4f78f3744990754538ab",
+    "semantic_hash": ""
+  },
+  "docs/product_requirements.md": {
+    "mtime": 1788841857.1518269,
+    "ast_hash": "ded85f48948aff1689bf01d01ea2e219",
+    "semantic_hash": ""
+  },
+  "docs/take_home_assignment.md": {
+    "mtime": 1788512975.341762,
+    "ast_hash": "c571314c4867b9a8da43744212b99ea2",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-09-user-management-login-td.md": {
+    "mtime": 1789018640.3458433,
+    "ast_hash": "960af240c463c5adaac11426c4a1e70f",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-admin-book-catalogue-td.md": {
+    "mtime": 1789021079.3712184,
+    "ast_hash": "802c1f4d1c8bf2630b97dca0d06429e3",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-async-database-client-plan.md": {
+    "mtime": 1789019700.0285585,
+    "ast_hash": "8a7c222f9e3bb8267fc83e45f06306a2",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-book-catalogue-search-td.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "51be7db08105c1cc1e053906f2105bcd",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-book-loans-td.md": {
+    "mtime": 1789027061.04621,
+    "ast_hash": "9d675f5172f5ab7d9d73adac2564a1fd",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-frontend-books-catalogue-plan.md": {
+    "mtime": 1789024433.029196,
+    "ast_hash": "fe801097b63c4dd9aa20c153a00c73ca",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-frontend-books-search-td.md": {
+    "mtime": 1789039283.3974557,
+    "ast_hash": "f488980cdf3909e7671646fbe6f6e256",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-frontend-loaning-a-book-plan.md": {
+    "mtime": 1789037204.2751818,
+    "ast_hash": "b8367a838f70f65ebf5cce4131c60832",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-frontend-login-plan.md": {
+    "mtime": 1789021950.5306268,
+    "ast_hash": "55ecce79ecd2d924caa42da5937ca615",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-10-open-library-book-seed-plan.md": {
+    "mtime": 1789055061.6666327,
+    "ast_hash": "2deb9ba73bb0cd5aac95d702dac0beb6",
+    "semantic_hash": ""
+  },
+  "docs/tech-design/2026-09-11-book-reservations-notifications-td.md": {
+    "mtime": 1789092608.103393,
+    "ast_hash": "b1040c212c57adeee859bbadce5648e9",
+    "semantic_hash": ""
+  },
+  "frontend/index.html": {
+    "mtime": 1789021950.5313208,
+    "ast_hash": "9f7929916ee425d2015c806426702371",
+    "semantic_hash": ""
+  }
+}
