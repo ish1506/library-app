@@ -69,6 +69,48 @@ uv run python scripts/seed_user.py admin --password 'admin' --role ADMIN
 
 The helper rejects duplicate usernames and stores only an Argon2id password hash.
 
+## Seed the book catalogue
+
+The book seed is a curated manifest of exactly 100 unique famous titles. The
+script searches Open Library sequentially and stores each raw JSON response in
+the ignored `backend/seed_cache/` directory. Set `OPEN_LIBRARY_CONTACT_EMAIL`
+to a real contact address before fetching; it is included in the identifying
+User-Agent. The default is `library-app@example.com`. Requests are rate-limited
+to 0.2 seconds and retried with exponential backoff.
+
+From the `backend` directory, fetch and create the default normalized CSV:
+
+```bash
+OPEN_LIBRARY_CONTACT_EMAIL='you@example.com' uv run python scripts/seed_books.py --fetch
+```
+
+Use `--refresh --fetch` to ignore cached responses. Export to a specific CSV
+with `--csv PATH` (it fetches missing responses and reuses the cache):
+
+```bash
+uv run python scripts/seed_books.py --csv /tmp/library-books.csv
+```
+
+The CSV columns are `source_key,title,author,date,isbn,loan_duration_days,
+total_copies,available_copies`. Missing authors default to `Unknown Author`,
+missing dates to Unix timestamp `0`, and inventory defaults to a 14-day loan,
+one total copy, and one available copy. Entries without a valid ISBN-13 or
+with duplicate ISBN-13 values are reported and skipped. Dates outside the
+existing PostgreSQL `BIGINT` timestamp range also use the `0` sentinel. The
+batch is validated before any database write.
+
+Load the default CSV transactionally and idempotently. Existing ISBNs are not
+updated. `--dry-run` validates and reports the number that would be inserted:
+
+```bash
+uv run python scripts/seed_books.py --load
+uv run python scripts/seed_books.py --load --dry-run
+uv run python scripts/seed_books.py --load --csv /tmp/library-books.csv
+```
+
+Rerun `--load` safely after a failed or completed run. A transaction rollback
+leaves all rows unchanged; rerunning inserts only ISBNs that are still absent.
+
 ## Login
 
 ```bash

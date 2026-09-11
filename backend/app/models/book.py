@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Integer, String, UniqueConstraint
+from sqlalchemy import BigInteger, CheckConstraint, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -24,7 +24,7 @@ class Book(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     author: Mapped[str] = mapped_column(String, nullable=False)
-    date: Mapped[int] = mapped_column(Integer, nullable=False)
+    date: Mapped[int] = mapped_column(BigInteger, nullable=False)
     isbn: Mapped[str] = mapped_column(String(13), nullable=False)
     loan_duration_days: Mapped[int] = mapped_column(Integer, nullable=False)
     total_copies: Mapped[int] = mapped_column(Integer, nullable=False)
