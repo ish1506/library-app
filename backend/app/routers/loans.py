@@ -12,7 +12,7 @@ from app.models.user import User
 from app.routers.dependencies import require_user
 from app.schemas.book_loan import BookLoanResponse
 from app.services.late_fees import calculate_late_fee_cents
-from app.services.reservations import timestamp
+from app.services.reservations import promote_returned_copy, timestamp
 
 router = APIRouter(prefix="/loans", tags=["loans"])
 logger = logging.getLogger("uvicorn.error.library_api")
@@ -114,10 +114,9 @@ async def return_loan(
         cutoff_timestamp=now,
         daily_rate_cents=book.late_fee_cents_per_day,
     )
-    now = timestamp()
     loan.status = LoanStatus.RETURNED
     loan.returned_timestamp = now
-    book.available_copies += 1
+    await promote_returned_copy(db, book, now)
     await db.commit()
     await db.refresh(loan)
     return loan
