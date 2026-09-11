@@ -6,8 +6,9 @@ from uuid import uuid4
 import pytest
 from app.database import get_db
 from app.models.book import Book
-from app.models.book_loan import BookLoan, LoanStatus
-from app.models.user import Role, User
+from app.models.book_loan import BookLoan
+from app.models.enums import LoanStatus, Role
+from app.models.user import User
 from app.services.auth import create_access_token
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient

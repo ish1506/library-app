@@ -5,9 +5,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.book import Book
-from app.models.book_loan import BookLoan, LoanStatus
-from app.models.book_reservation import BookReservation, ReservationStatus
-from app.models.notification import Notification, NotificationType
+from app.models.book_loan import BookLoan
+from app.models.book_reservation import BookReservation
+from app.models.enums import LoanStatus, NotificationType, ReservationStatus
+from app.models.notification import Notification
 from app.policy import library_policy
 
 logger = logging.getLogger("uvicorn.error.library_api")

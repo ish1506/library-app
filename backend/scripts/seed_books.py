@@ -8,7 +8,7 @@ import re
 import sys
 import time
 from collections.abc import Callable, Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote_plus
@@ -73,7 +73,7 @@ def date_to_timestamp(value: Any) -> int:
     month = int(match.group(2) or 1)
     day = int(match.group(3) or 1)
     try:
-        timestamp = int(datetime(year, month, day, tzinfo=timezone.utc).timestamp())
+        timestamp = int(datetime(year, month, day, tzinfo=UTC).timestamp())
         return timestamp if -(2**63) <= timestamp <= 2**63 - 1 else 0
     except ValueError:
         return 0

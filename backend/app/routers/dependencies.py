@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_db
-from app.models.user import Role, User
+from app.models.enums import Role
+from app.models.user import User
 
 bearer_scheme = HTTPBearer(auto_error=False)
 BEARER_DEPENDENCY = Depends(bearer_scheme)

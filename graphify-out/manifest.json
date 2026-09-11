@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "backend/app/models/__init__.py": {
-    "mtime": 1789097614.4323173,
-    "ast_hash": "84a5ad9d5ae6a8469404e7f23ee4eb23",
+    "mtime": 1789105465.79889,
+    "ast_hash": "6d0db2d2ba0bdae95e8b3520f3743aef",
     "semantic_hash": ""
   },
   "backend/app/models/book.py": {
@@ -60,13 +60,13 @@
     "semantic_hash": ""
   },
   "backend/app/models/book_loan.py": {
-    "mtime": 1789100070.3149037,
-    "ast_hash": "7c45dd5d2af538738c42804a85d8415a",
+    "mtime": 1789105465.79889,
+    "ast_hash": "225a4438b0e167a0564fa6616a3871af",
     "semantic_hash": ""
   },
   "backend/app/models/user.py": {
-    "mtime": 1789100377.2252812,
-    "ast_hash": "cc2709f711eeb77219bae012661b3a5a",
+    "mtime": 1789105465.802581,
+    "ast_hash": "40f2cde65723e01000d36f48d66484db",
     "semantic_hash": ""
   },
   "backend/app/routers/__init__.py": {
@@ -80,18 +80,18 @@
     "semantic_hash": "24d7a832e696583236c682f0f0b7156c"
   },
   "backend/app/routers/books.py": {
-    "mtime": 1789100070.3154519,
-    "ast_hash": "ec9b629f95e636ce7aba5e609f2e2b6e",
+    "mtime": 1789105471.3762088,
+    "ast_hash": "39b57d04cd2e1840db5f0df115cbb7ad",
     "semantic_hash": ""
   },
   "backend/app/routers/dependencies.py": {
-    "mtime": 1789033831.3360603,
-    "ast_hash": "54da257ef6ea7af544f76dbf37627d73",
-    "semantic_hash": "54da257ef6ea7af544f76dbf37627d73"
+    "mtime": 1789105473.9985547,
+    "ast_hash": "f79a818928e8794e00e28ef60ef048ac",
+    "semantic_hash": ""
   },
   "backend/app/routers/loans.py": {
-    "mtime": 1789100070.3157704,
-    "ast_hash": "75c83ac6e8025b543cf397279a9400e9",
+    "mtime": 1789105481.9132466,
+    "ast_hash": "101c9b7213c497dc8e031dba87b456a0",
     "semantic_hash": ""
   },
   "backend/app/schemas/__init__.py": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "backend/app/schemas/book_loan.py": {
-    "mtime": 1789100070.3164682,
-    "ast_hash": "b72ba98a13c12e88308380d1f438ba8f",
+    "mtime": 1789105465.8034751,
+    "ast_hash": "a9e123ea3fcd0fe56fd26b05aaec0b2b",
     "semantic_hash": ""
   },
   "backend/app/services/__init__.py": {
@@ -125,8 +125,8 @@
     "semantic_hash": "928a6da6dfa0ee20768b9101f8a9a5bc"
   },
   "backend/main.py": {
-    "mtime": 1789100070.3195708,
-    "ast_hash": "eac5d93267b87074d0e3747d3d3d07a1",
+    "mtime": 1789105465.8107233,
+    "ast_hash": "59f50c5891a3ce12dd2ae8d5d9aed0ef",
     "semantic_hash": ""
   },
   "backend/pyproject.toml": {
@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "backend/scripts/seed_user.py": {
-    "mtime": 1789018640.3419428,
-    "ast_hash": "1f8d863de9d772b72388ac5e06d149c6",
-    "semantic_hash": "1f8d863de9d772b72388ac5e06d149c6"
+    "mtime": 1789105465.811328,
+    "ast_hash": "11b93a8454aa50297a51fb2f61a055b5",
+    "semantic_hash": ""
   },
   "backend/scripts/test.sh": {
     "mtime": 1789019234.0437932,
@@ -170,23 +170,23 @@
     "semantic_hash": "fda5ef555d4ddb7bf1b878221477c89f"
   },
   "backend/tests/test_auth_service.py": {
-    "mtime": 1789018640.3447223,
-    "ast_hash": "ef83c070e220aa585a40ac88aa95b878",
-    "semantic_hash": "ef83c070e220aa585a40ac88aa95b878"
+    "mtime": 1789105465.8119125,
+    "ast_hash": "bd6de56dfbb660aa12b61d7086457250",
+    "semantic_hash": ""
   },
   "backend/tests/test_book_loans.py": {
-    "mtime": 1789100377.2252812,
-    "ast_hash": "ec1b04be2b7237ef7728b83e0b394541",
+    "mtime": 1789105465.812778,
+    "ast_hash": "d8afa8b2a1c451854ffddf0f6aac963c",
     "semantic_hash": ""
   },
   "backend/tests/test_books.py": {
-    "mtime": 1789100377.2252812,
-    "ast_hash": "d822f998dc22dff6af6df83cd9f9030e",
+    "mtime": 1789105465.8150244,
+    "ast_hash": "82c0f767d77b6047be9e61c364f877bd",
     "semantic_hash": ""
   },
   "backend/tests/test_database.py": {
-    "mtime": 1789100377.2252812,
-    "ast_hash": "2e288a33b9a339907375f2c7e25ca1a2",
+    "mtime": 1789105516.8264089,
+    "ast_hash": "cf820aa8f026a2135e98ff598b2980cc",
     "semantic_hash": ""
   },
   "backend/tests/test_lifespan.py": {
@@ -195,9 +195,9 @@
     "semantic_hash": "9addc4e83fcbd8a389d214a81b4a2674"
   },
   "backend/tests/test_login.py": {
-    "mtime": 1789025829.832613,
-    "ast_hash": "0e2c90e491b992490ae7eb5401b12d63",
-    "semantic_hash": "0e2c90e491b992490ae7eb5401b12d63"
+    "mtime": 1789105465.8174298,
+    "ast_hash": "adeb6f12ab416f8a4145dcefd25a777f",
+    "semantic_hash": ""
   },
   "backend/tests/test_seed_books.py": {
     "mtime": 1789092503.0994713,
@@ -220,12 +220,12 @@
     "semantic_hash": ""
   },
   "frontend/src/App.test.tsx": {
-    "mtime": 1789105140.2289126,
+    "mtime": 1789105302.1363723,
     "ast_hash": "fac83dc30744bd7e4cb6ee6dec6c5de8",
     "semantic_hash": ""
   },
   "frontend/src/App.tsx": {
-    "mtime": 1789105140.229182,
+    "mtime": 1789105302.1372592,
     "ast_hash": "cfe7b537994a143fce0495ffaa67ae29",
     "semantic_hash": ""
   },
@@ -430,13 +430,13 @@
     "semantic_hash": ""
   },
   "backend/app/models/book_reservation.py": {
-    "mtime": 1789097614.4325056,
-    "ast_hash": "1cb59dc2f5149b7af6e9178c795d2e23",
+    "mtime": 1789105465.8010054,
+    "ast_hash": "59013982513ba0be377175ec6c7c3801",
     "semantic_hash": ""
   },
   "backend/app/models/notification.py": {
-    "mtime": 1789097614.4326744,
-    "ast_hash": "bf853f3fe140da3eeb2b2d1927b7f1b9",
+    "mtime": 1789105465.8018136,
+    "ast_hash": "da1260883142bfe02f1c9adb1d796ace",
     "semantic_hash": ""
   },
   "backend/app/routers/notifications.py": {
@@ -445,28 +445,28 @@
     "semantic_hash": ""
   },
   "backend/app/routers/reservations.py": {
-    "mtime": 1789097614.433699,
-    "ast_hash": "b51350c616a353de9bc1370065603864",
+    "mtime": 1789105465.8034751,
+    "ast_hash": "140fbbcb7cc547beb462c6e411c11461",
     "semantic_hash": ""
   },
   "backend/app/schemas/book_reservation.py": {
-    "mtime": 1789097614.4339051,
-    "ast_hash": "f59175316cf7c695c82cec80e3f48ec8",
+    "mtime": 1789105465.8034751,
+    "ast_hash": "5c2bcd68ed9ac31f9524d782cafc3a0a",
     "semantic_hash": ""
   },
   "backend/app/schemas/notification.py": {
-    "mtime": 1789097614.4339051,
-    "ast_hash": "36553d6c73811de5d27314c58c689e04",
+    "mtime": 1789105465.8088675,
+    "ast_hash": "a2794e7d6dc9f074d06a3ec532757dc3",
     "semantic_hash": ""
   },
   "backend/app/services/reservations.py": {
-    "mtime": 1789100070.3177733,
-    "ast_hash": "47e1800d4ef86f5bd8dae5384d5c36d5",
+    "mtime": 1789105465.8098645,
+    "ast_hash": "e88f6c7703880ad02a561ee57e75e488",
     "semantic_hash": ""
   },
   "backend/tests/test_book_reservations.py": {
-    "mtime": 1789097614.4353323,
-    "ast_hash": "4fc9ace560f583af0cd25fa7b8158c85",
+    "mtime": 1789105465.813693,
+    "ast_hash": "ab9a0492e92712745e7520ae360dbd95",
     "semantic_hash": ""
   },
   "backend/alembic/versions/20260911_0008_add_late_fees.py": {
@@ -490,7 +490,7 @@
     "semantic_hash": ""
   },
   "frontend/src/api/notifications.test.ts": {
-    "mtime": 1789105140.229423,
+    "mtime": 1789105302.1372592,
     "ast_hash": "7ad76280e330c4ec813d9ff717c75bcc",
     "semantic_hash": ""
   },
@@ -547,6 +547,11 @@
   "frontend/README.md": {
     "mtime": 1789105166.1063595,
     "ast_hash": "3ef741cd069cb1199fd2e96dc1d41869",
+    "semantic_hash": ""
+  },
+  "backend/app/models/enums.py": {
+    "mtime": 1789105420.2964797,
+    "ast_hash": "a87784b47e57b9cae3d4bc881275a302",
     "semantic_hash": ""
   }
 }

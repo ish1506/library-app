@@ -1,5 +1,3 @@
-import enum
-
 from sqlalchemy import (
     JSON,
     BigInteger,
@@ -12,10 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-
-class NotificationType(enum.IntEnum):
-    RESERVATION_READY = 1
+from app.models.enums import NotificationType
 
 
 class Notification(Base):

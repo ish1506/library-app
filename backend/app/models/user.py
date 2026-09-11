@@ -1,14 +1,8 @@
-import enum
-
 from sqlalchemy import Enum, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-
-class Role(str, enum.Enum):
-    USER = "USER"
-    ADMIN = "ADMIN"
+from app.models.enums import Role
 
 
 class User(Base):

@@ -17,7 +17,7 @@ def _parse_publication_date(value: Any) -> int:
         raise ValueError("date must be an ISO 8601 datetime string")  # noqa: TRY004
 
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value)
     except ValueError as error:
         raise ValueError("date must be an ISO 8601 datetime string") from error
 

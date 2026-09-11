@@ -1,17 +1,8 @@
-import enum
-
 from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, Index, Integer, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-
-class ReservationStatus(enum.IntEnum):
-    PENDING = 1
-    READY = 2
-    FULFILLED = 3
-    CANCELLED = 4
-    EXPIRED = 5
+from app.models.enums import ReservationStatus
 
 
 class BookReservation(Base):

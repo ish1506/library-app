@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.models.book_reservation import ReservationStatus
+from app.models.enums import ReservationStatus
 from app.schemas.book_loan import BookLoanResponse
 
 

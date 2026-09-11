@@ -2,7 +2,8 @@ from collections.abc import Iterable
 
 from app.database import get_db
 from app.models.book import Book
-from app.models.user import Role, User
+from app.models.enums import Role
+from app.models.user import User
 from app.routers.dependencies import get_current_user, require_admin
 from app.services.auth import create_access_token
 from fastapi.testclient import TestClient

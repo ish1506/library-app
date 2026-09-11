@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.book import Book
-from app.models.book_loan import BookLoan, LoanStatus
+from app.models.book_loan import BookLoan
+from app.models.enums import LoanStatus
 from app.models.user import User
 from app.routers.dependencies import require_user
 from app.schemas.book_loan import BookLoanResponse

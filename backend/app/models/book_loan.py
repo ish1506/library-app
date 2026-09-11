@@ -1,14 +1,8 @@
-import enum
-
 from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, Index, Integer, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-
-
-class LoanStatus(enum.IntEnum):
-    BORROWED = 1
-    RETURNED = 2
+from app.models.enums import LoanStatus
 
 
 class BookLoan(Base):

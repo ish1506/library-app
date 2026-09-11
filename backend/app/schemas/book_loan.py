@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.models.book_loan import LoanStatus
+from app.models.enums import LoanStatus
 
 
 class BookLoanResponse(BaseModel):

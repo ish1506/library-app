@@ -1,8 +1,9 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import jwt
 from app.config import settings
-from app.models.user import Role, User
+from app.models.enums import Role
+from app.models.user import User
 from app.services.auth import create_access_token, hash_password, verify_password
 
 
@@ -17,7 +18,7 @@ def test_password_hash_is_argon2id_and_verifies() -> None:
 
 def test_access_token_contains_identity_role_and_one_hour_expiry() -> None:
     user = User(id=42, username="alice", role=Role.ADMIN, password_hash="hidden")
-    before = datetime.now(timezone.utc).timestamp()
+    before = datetime.now(UTC).timestamp()
     token = create_access_token(user)
     claims = jwt.decode(token, settings.jwt_secret_key, algorithms=["HS256"])
 

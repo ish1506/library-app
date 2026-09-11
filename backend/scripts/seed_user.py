@@ -6,7 +6,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.database import SessionLocal
-from app.models.user import Role, User
+from app.models.enums import Role
+from app.models.user import User
 from app.services.auth import hash_password
 from sqlalchemy import select
 

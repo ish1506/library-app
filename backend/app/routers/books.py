@@ -10,8 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.book import Book
-from app.models.book_loan import BookLoan, LoanStatus
-from app.models.book_reservation import BookReservation, ReservationStatus
+from app.models.book_loan import BookLoan
+from app.models.book_reservation import BookReservation
+from app.models.enums import LoanStatus, ReservationStatus
 from app.models.user import User
 from app.policy import library_policy
 from app.routers.dependencies import get_current_user, require_admin, require_user

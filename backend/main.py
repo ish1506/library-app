@@ -6,7 +6,8 @@ from uuid import uuid4
 
 from app.database import AsyncSessionLocal, async_engine
 from app.models.book import Book
-from app.models.book_reservation import BookReservation, ReservationStatus
+from app.models.book_reservation import BookReservation
+from app.models.enums import ReservationStatus
 from app.policy import library_policy
 from app.routers.auth import router as auth_router
 from app.routers.books import router as books_router

@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.book import Book
-from app.models.book_reservation import BookReservation, ReservationStatus
+from app.models.book_reservation import BookReservation
+from app.models.enums import ReservationStatus
 from app.models.user import User
 from app.routers.dependencies import require_user
 from app.schemas.book_reservation import (

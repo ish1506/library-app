@@ -12,10 +12,12 @@ from app.services.auth import create_access_token, verify_password
 router = APIRouter(prefix="/auth", tags=["authentication"])
 logger = logging.getLogger("uvicorn.error.library_api")
 
+DB_DEPENDENCY = Depends(get_db)
+
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
-    credentials: LoginRequest, db: AsyncSession = Depends(get_db)
+    credentials: LoginRequest, db: AsyncSession = DB_DEPENDENCY
 ) -> TokenResponse:
     user = await db.scalar(select(User).where(User.username == credentials.username))
     if user is None or not verify_password(credentials.password, user.password_hash):

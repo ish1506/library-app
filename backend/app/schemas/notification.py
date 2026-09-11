@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.models.notification import NotificationType
+from app.models.enums import NotificationType
 
 
 class NotificationResponse(BaseModel):

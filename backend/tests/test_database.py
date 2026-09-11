@@ -3,12 +3,11 @@ from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
-
-import pytest
 from app.database import get_db
 from app.models.book import Book
-from app.models.book_loan import BookLoan, LoanStatus
-from app.models.user import Role, User
+from app.models.book_loan import BookLoan
+from app.models.enums import LoanStatus, Role
+from app.models.user import User
 from app.routers.books import book_search_vector, book_sort_expression
 from app.schemas.book import BookListQuery
 from sqlalchemy import create_engine, delete, func, insert, inspect, select
