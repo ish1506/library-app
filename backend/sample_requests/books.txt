@@ -56,7 +56,7 @@ curl --request PATCH '{{baseUrl}}/books/{{bookId}}' \
 curl --request DELETE '{{baseUrl}}/books/{{bookId}}' \
   --header 'Authorization: Bearer {{adminToken}}'
 
-# Borrow, list, and return a loan as a USER. Define userToken and loanId.
+# Borrow, list history, and return a loan as a USER. Define userToken and loanId.
 curl --request POST '{{baseUrl}}/books/{{bookId}}/loans' \
   --header 'Authorization: Bearer {{userToken}}'
 

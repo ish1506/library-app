@@ -13,3 +13,4 @@ class BookLoanResponse(BaseModel):
     due_at_timestamp: int
     returned_timestamp: int | None
     status: LoanStatus
+    late_fee_cents: int

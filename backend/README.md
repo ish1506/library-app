@@ -55,14 +55,17 @@ Additional pytest arguments can be passed through, such as
 `postgresql+psycopg://library_app:password@localhost:5432/library_db`.
 `JWT_SECRET_KEY` must be a cryptographically random signing secret. Both values
 are required. `.env` is local-only and must not be committed; use `.env.example`
-as the safe template.
+as the safe template. Shared late-fee configuration is committed in
+`config/library.yaml`; `late_fees.daily_rate_cents` must be a positive integer.
+The policy is validated during startup and migration, and each book snapshots
+the configured rate when it is created.
 
-Reservations use `RESERVATION_HOLD_SECONDS` for the duration of a ready hold;
-the default is `86400` seconds and the value must be positive. The in-process
-expiry worker checks every `RESERVATION_WORKER_INTERVAL_SECONDS` seconds,
-defaulting to `60`. Each reservation mutation also expires relevant holds, so
-correctness does not depend on the worker. A multi-process deployment needs a
-database-backed scheduler or lease.
+Reservation timing is configured in `config/library.yaml` under
+`reservations.hold_seconds` and `reservations.worker_interval_seconds`; both
+values must be positive integers. The defaults are `86400` seconds for a ready
+hold and `60` seconds for the in-process expiry worker. Each reservation
+mutation also expires relevant holds, so correctness does not depend on the
+worker. A multi-process deployment needs a database-backed scheduler or lease.
 
 ## Provision an account
 
@@ -197,7 +200,7 @@ supported payload.
 
 Borrowing and returning require a `USER` bearer token. `POST
 /books/{book_id}/loans` creates a title-level loan and returns `201`; `GET
-/loans/me` lists only the caller's active loans; and `POST
+/loans/me` returns the caller's active and returned history; and `POST
 /loans/{loan_id}/return` returns one of the caller's active loans. An `ADMIN`
 can use `GET /books/{book_id}/loans` to list that book's active loans and
 borrower IDs. These endpoints return Unix UTC timestamps in seconds and use
@@ -205,8 +208,11 @@ status `1` for `BORROWED` and `2` for `RETURNED`.
 
 Unavailable books and duplicate active loans return `409`. A returned loan
 cannot be returned again, and a book with loan history cannot be deleted.
-Overdue loans remain active until returned. Reservations, renewal, late fees,
-and per-copy inventory are not supported by the loan endpoints.
+Overdue loans remain active until returned. A fee is incurred for each complete
+24-hour period after the due timestamp, using the book's immutable daily-rate
+snapshot. Active fees are refreshed and persisted when `/loans/me` is accessed;
+returned fees are frozen atomically with the return. Payment collection,
+balances, renewal, and per-copy inventory are not supported.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/books/$bookId/loans \

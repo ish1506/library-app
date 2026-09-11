@@ -4,10 +4,10 @@ from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
-from app.config import settings
 from app.database import AsyncSessionLocal, async_engine
 from app.models.book import Book
 from app.models.book_reservation import BookReservation, ReservationStatus
+from app.policy import library_policy
 from app.routers.auth import router as auth_router
 from app.routers.books import router as books_router
 from app.routers.loans import router as loans_router
@@ -23,7 +23,7 @@ logger.setLevel(logging.DEBUG)
 
 async def reservation_expiry_worker() -> None:
     while True:
-        await asyncio.sleep(settings.reservation_worker_interval_seconds)
+        await asyncio.sleep(library_policy.reservations.worker_interval_seconds)
         try:
             async with AsyncSessionLocal() as db:
                 book_ids = (

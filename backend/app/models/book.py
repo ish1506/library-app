@@ -2,6 +2,7 @@ from sqlalchemy import BigInteger, CheckConstraint, Integer, String, UniqueConst
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
+from app.policy import library_policy
 
 
 class Book(Base):
@@ -19,6 +20,10 @@ class Book(Base):
             "available_copies <= total_copies",
             name="ck_books_available_copies_lte_total_copies",
         ),
+        CheckConstraint(
+            "late_fee_cents_per_day > 0",
+            name="ck_books_late_fee_cents_per_day_positive",
+        ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -29,3 +34,6 @@ class Book(Base):
     loan_duration_days: Mapped[int] = mapped_column(Integer, nullable=False)
     total_copies: Mapped[int] = mapped_column(Integer, nullable=False)
     available_copies: Mapped[int] = mapped_column(Integer, nullable=False)
+    late_fee_cents_per_day: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=library_policy.late_fees.daily_rate_cents
+    )

@@ -107,6 +107,7 @@ class BookResponse(BaseModel):
     loan_duration_days: int
     total_copies: int
     available_copies: int
+    late_fee_cents_per_day: int
 
 
 class BookListQuery(BaseModel):
