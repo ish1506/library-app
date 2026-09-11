@@ -1,10 +1,11 @@
 import logging
 
+from fastapi.testclient import TestClient
+
 from app.database import get_db
 from app.models.enums import Role
 from app.models.user import User
 from app.services.auth import hash_password
-from fastapi.testclient import TestClient
 from main import app
 
 

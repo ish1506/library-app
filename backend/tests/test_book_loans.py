@@ -4,18 +4,19 @@ from dataclasses import dataclass
 from uuid import uuid4
 
 import pytest
+from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import Engine, create_engine, delete, insert, select
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
+
 from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan
 from app.models.enums import LoanStatus, Role
 from app.models.user import User
 from app.services.auth import create_access_token
-from fastapi.testclient import TestClient
-from httpx import ASGITransport, AsyncClient
 from main import app
-from sqlalchemy import Engine, create_engine, delete, insert, select
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
 
 class AuthSession:

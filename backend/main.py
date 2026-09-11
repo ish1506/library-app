@@ -4,6 +4,9 @@ from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
+from fastapi import FastAPI, Request
+from sqlalchemy import select
+
 from app.database import AsyncSessionLocal, async_engine
 from app.models.book import Book
 from app.models.book_reservation import BookReservation
@@ -15,8 +18,6 @@ from app.routers.loans import router as loans_router
 from app.routers.notifications import router as notifications_router
 from app.routers.reservations import router as reservations_router
 from app.services.reservations import expire_ready_reservations, timestamp
-from fastapi import FastAPI, Request
-from sqlalchemy import select
 
 logger = logging.getLogger("uvicorn.error.library_api")
 logger.setLevel(logging.DEBUG)

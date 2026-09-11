@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 import jwt
+
 from app.config import settings
 from app.models.enums import Role
 from app.models.user import User

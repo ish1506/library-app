@@ -2,6 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from sqlalchemy import select
+
 # Direct script execution puts only scripts/ on sys.path.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -9,7 +11,6 @@ from app.database import SessionLocal
 from app.models.enums import Role
 from app.models.user import User
 from app.services.auth import hash_password
-from sqlalchemy import select
 
 
 def main() -> int:

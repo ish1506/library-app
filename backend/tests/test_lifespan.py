@@ -1,8 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-import main
 from fastapi.testclient import TestClient
+
+import main
 from main import app
 
 

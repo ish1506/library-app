@@ -1,14 +1,15 @@
 from collections.abc import Iterable
 
+from fastapi.testclient import TestClient
+from sqlalchemy.exc import IntegrityError
+
 from app.database import get_db
 from app.models.book import Book
 from app.models.enums import Role
 from app.models.user import User
 from app.routers.dependencies import get_current_user, require_admin
 from app.services.auth import create_access_token
-from fastapi.testclient import TestClient
 from main import app
-from sqlalchemy.exc import IntegrityError
 
 
 class ConstraintDiagnostic:
