@@ -40,8 +40,8 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "backend/app/config.py": {
-    "mtime": 1789100070.314208,
-    "ast_hash": "f3442c574d92e248986ac3125478da64",
+    "mtime": 1789119127.7386353,
+    "ast_hash": "beab77cf4c1e5a19819f937a6fccd240",
     "semantic_hash": ""
   },
   "backend/app/database.py": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "backend/main.py": {
-    "mtime": 1789106775.9724247,
-    "ast_hash": "3c25c6000111b8aba4be2ad7de41f607",
+    "mtime": 1789119111.4164014,
+    "ast_hash": "fd5cbc50b6b979b40df76a98df9f3822",
     "semantic_hash": ""
   },
   "backend/pyproject.toml": {
@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "backend/tests/test_lifespan.py": {
-    "mtime": 1789106775.9680877,
-    "ast_hash": "57e6be556e50f784b5f6e519160b2c82",
+    "mtime": 1789119196.6253161,
+    "ast_hash": "44b3adada00b41e9ecf728e93debbc58",
     "semantic_hash": ""
   },
   "backend/tests/test_login.py": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789105166.105252,
-    "ast_hash": "61d181ccdef359b0b4537f3905be5c4f",
+    "mtime": 1789109448.5825653,
+    "ast_hash": "cbf43546177806ec6bcaf78270da1cdf",
     "semantic_hash": ""
   },
   "backend/AGENTS.md": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "backend/README.md": {
-    "mtime": 1789105166.1058033,
-    "ast_hash": "87468ef2284d50a127b0b9cac0f5f2ee",
+    "mtime": 1789118679.9279313,
+    "ast_hash": "14cb300551ed16cd7636d8e0303d5b9a",
     "semantic_hash": ""
   },
   "backend/sample_requests/books.txt": {
@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "docs/DEVELOPER_GUIDE.md": {
-    "mtime": 1789105166.1063595,
-    "ast_hash": "2f2417c5f747cc4edfd449dec87d1632",
+    "mtime": 1789109448.5843647,
+    "ast_hash": "cd9392b77207811a1650666f73a29cc0",
     "semantic_hash": ""
   },
   "docs/implementation/2026-09-10-book-loans-code-review-1.md": {
@@ -557,6 +557,16 @@
   ".vscode/settings.json": {
     "mtime": 1789106773.3485446,
     "ast_hash": "aedfc209f8ee86499c3e70c3edea8f9d",
+    "semantic_hash": ""
+  },
+  "compose.yaml": {
+    "mtime": 1789119271.6470053,
+    "ast_hash": "124d894b8c2d607b00958f880f5072c8",
+    "semantic_hash": ""
+  },
+  "backend/tests/test_config.py": {
+    "mtime": 1789119133.37066,
+    "ast_hash": "ee9e7ff053475df7e6665dca5f5d6521",
     "semantic_hash": ""
   }
 }

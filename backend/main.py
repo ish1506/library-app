@@ -5,8 +5,10 @@ from time import perf_counter
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
+from app.config import settings
 from app.database import AsyncSessionLocal, async_engine
 from app.models.book import Book
 from app.models.book_reservation import BookReservation
@@ -63,6 +65,13 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Library API", version="0.1.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 app.include_router(auth_router)
 app.include_router(books_router)
 app.include_router(loans_router)
