@@ -1,0 +1,101 @@
+source_key,title,author,date,isbn,loan_duration_days,total_copies,available_copies
+/works/OL66554W,Pride and Prejudice,Jane Austen,941760000,9798749154306,14,1,1
+/works/OL28627804W,1984,George Orwell,1640995200,9798837303432,14,1,1
+/works/OL3140822W,To Kill a Mockingbird,Harper Lee,725846400,9785040077656,14,1,1
+/works/OL33864210W,The great Gatsby,F. Scott Fitzgerald,883612800,9798833244869,14,1,1
+/works/OL9838790W,One Hundred Years of Solitude,Prastavna Sinha Mehta,1041379200,9781560777335,14,1,1
+/works/OL35336208W,Moby Dick,Herman Melville,1577836800,9798704335597,14,1,1
+/works/OL267171W,War and Peace,Лев Толстой,-3345062400,9782070580262,14,1,1
+/works/OL35297456W,The Catcher in the Rye,Scott Hurley,1312156800,9781921088834,14,1,1
+/works/OL4699021W,The Hobbit,Mary Elizabeth,883612800,9780931993909,14,1,1
+/works/OL28935078W,Jane Eyre,Charlotte Brontë,1609459200,9798711844174,14,1,1
+/works/OL27448W,The Lord of the Rings,J.R.R. Tolkien,725846400,9783608958553,14,1,1
+/works/OL34814029W,The little prince,Antoine de Saint-Exupéry,1420070400,9788490019023,14,1,1
+/works/OL82563W,Harry Potter and the Philosopher's Stone,J. K. Rowling,1372636800,9789878000107,14,1,1
+/works/OL24716116W,The Chronicles of Narnia,C. S. Lewis,1388534400,9787544747165,14,1,1
+/works/OL19944070W,The alchemist,Paolo Bacigalupi,1293840000,9781596063532,14,1,1
+/works/OL64365W,Brave New World,Aldous Huxley,725846400,9798365087255,14,1,1
+/works/OL21062236W,Crime and Punishment,Фёдор Достоевский,1388534400,9798633163070,14,1,1
+/works/OL24600223W,The Brothers Karamazov,Фёдор Михайлович Достоевский,1420070400,9798519937580,14,1,1
+/works/OL37836971W,Wuthering Heights,Emily Brontë,1672531200,9798888975237,14,1,1
+/works/OL25965892W,The Picture of Dorian Gray,Oscar Wilde,1546300800,9798543730959,14,1,1
+/works/OL21162983W,The Old Man and the Sea,Ernest Hemmingway,1451606400,9789381841921,14,1,1
+/works/OL17812254W,The Odyssey,Όμηρος,1356998400,9781694671202,14,1,1
+/works/OL27292338W,The Iliad,Όμηρος,-757382400,9798553184834,14,1,1
+/works/OL2714378W,Don Quixote,Kathy Acker,1672531200,9782905479051,14,1,1
+/works/OL27718440W,Les Misérables,Victor Hugo,-2461449600,9782824710778,14,1,1
+/works/OL45255047W,The Count of Monte Cristo,Alexandre Dumas,-2082844800,9789388760072,14,1,1
+/works/OL19932787W,Anna Karenina,S. Solovʹev,1230768000,9789851671232,14,1,1
+/works/OL35342637W,The Divine Comedy,Dante Alighieri,1262304000,9781449557898,14,1,1
+/works/OL17358805W,The Stranger,Harlan Coben,1420070400,9781629533797,14,1,1
+/works/OL5728072W,The metamorphosis,"Kuper, Peter",1230768000,9781400047956,14,1,1
+/works/OL26211650W,Fahrenheit 451,Tim Hamilton,1546300800,9786051735634,14,1,1
+/works/OL675783W,The Handmaid's Tale,Margaret Atwood,820454400,9781984899668,14,1,1
+/works/OL50548W,Beloved,Toni Morrison,536457600,9780701162092,14,1,1
+/works/OL273644W,The Color Purple,Alice Walker,791596800,9781780228716,14,1,1
+/works/OL74411W,The Road,Jack London,-1988150400,9791092957204,14,1,1
+/works/OL22191998W,The Kite Runner,Nicolas Tredell,1577836800,9781642653779,14,1,1
+/works/OL30765007W,Life of Pi,Dzung Nguyen,1609459200,9798589835007,14,1,1
+/works/OL38926748W,The Book Thief,Marilyn Herbert,1257033600,9781897082584,14,1,1
+/works/OL8193465W,A Tale of Two Cities,Charles Dickens,-5364662400,9798361981670,14,1,1
+/works/OL8721462W,Great Expectations,Charles Dickens,1311292800,9798763878363,14,1,1
+/works/OL35814943W,Oliver Twist,Charles Dickens,1609459200,9798742091325,14,1,1
+/works/OL41094236W,David Copperfield,Charles Dickens,1514764800,9781985058927,14,1,1
+/works/OL35402209W,The Grapes of Wrath,Robert B. Harmon,631152000,9789999088664,14,1,1
+/works/OL23204W,Of Mice and Men,John Steinbeck,725846400,9788431635596,14,1,1
+/works/OL21792683W,East of Eden,Michael J. Meyer,1356998400,9789042037120,14,1,1
+/works/OL62979W,The Sun Also Rises,Ernest Hemingway,63072000,9798794866292,14,1,1
+/works/OL26420902W,The Sound and the Fury,William Faulkner,1640995200,9789390492749,14,1,1
+/works/OL276798W,Catch-22,Joseph Heller,1199145600,9789146215301,14,1,1
+/works/OL98459W,Slaughterhouse-Five,Kurt Vonnegut,-441849600,9783499115240,14,1,1
+/works/OL29319024W,The Hitchhiker’s Guide to the Galaxy,Douglas Adams,1546300800,9781787534674,14,1,1
+/works/OL893414W,Dune,Frank Herbert,725846400,9788373017238,14,1,1
+/works/OL46125W,Foundation,Isaac Asimov,-599616000,9780007270422,14,1,1
+/works/OL1940391W,The Martian,George du Maurier,1609459200,9798588455527,14,1,1
+/works/OL34957568W,Neuromancer,William Gibson,1451606400,9788576573005,14,1,1
+/works/OL59800W,The Left Hand of Darkness,Ursula K. Le Guin,-31536000,9780441478026,14,1,1
+/works/OL1717116W,The name of the rose,David Lipsey,694224000,9780716305545,14,1,1
+/works/OL36433603W,The Shadow of the Wind,Carlos Ruiz Zafón,1239235200,9781439569740,14,1,1
+/works/OL11356565W,The Master and Margarita,Edward Kemp,1072915200,9781840024487,14,1,1
+/works/OL5911411W,The Wind in the Willows,Lucy Kincaid,852076800,9781858546018,14,1,1
+/works/OL28897559W,Alice's Adventures in Wonderland,Ghost Reak Publications,1640995200,9798839933118,14,1,1
+/works/OL151406W,Through the Looking-Glass,Lewis Carroll,-3313440000,9788408182306,14,1,1
+/works/OL44143030W,The Wonderful Wizard of Oz,L. Frank Baum,1605225600,9798561941405,14,1,1
+/works/OL462007W,Peter Pan,J. M. Barrie,1199145600,9788437628851,14,1,1
+/works/OL69612W,The Secret Garden,Frances Hodgson Burnett,1580515200,9781724308931,14,1,1
+/works/OL69630W,A Little Princess,Frances Hodgson Burnett,-2051222400,9798507847334,14,1,1
+/works/OL26844766W,Anne of Green Gables,Lucy Maud Montgomery,-1956614400,9798896130147,14,1,1
+/works/OL99509W,The Railway Children,Edith Nesbit,725846400,9798483256878,14,1,1
+/works/OL45846W,Matilda,Roald Dahl,725846400,9783499211829,14,1,1
+/works/OL34519309W,Charlie and the Chocolate Factory,Schoolhouse,1640995200,9798425807793,14,1,1
+/works/OL24724069W,The Giving Tree,Phillipa Nefri Clark,1609459200,9798503702101,14,1,1
+/works/OL36100687W,Where the Wild Things Are,Jeremy Adams,1609459200,9798536442197,14,1,1
+/works/OL8480193W,Charlotte's Web,Amanda Li,1136073600,9789867249845,14,1,1
+/works/OL52987W,The Very Hungry Caterpillar,Eric Carle,-31536000,9780241003008,14,1,1
+/works/OL30825221W,Goodnight Moon,Anne Siman,1609459200,9798723540385,14,1,1
+/works/OL1898309W,The Cat in the Hat,Dr. Seuss,-410227200,9782266119184,14,1,1
+/works/OL27378760W,The Adventures of Tom Sawyer,Mark Twain,1609459200,9789626340806,14,1,1
+/works/OL15490465W,The adventures of Huckleberry Finn,Roland Mann,1230768000,9789380028354,14,1,1
+/works/OL14942956W,The Call of the Wild,Jack London,31536000,9781433209581,14,1,1
+/works/OL34456276W,Twenty Thousand Leagues under the Sea,le papillon bleu,1577836800,9798646850929,14,1,1
+/works/OL26340422W,Around the World in Eighty Days,Michael Robert Bradie,1609459200,9789811233326,14,1,1
+/works/OL52267W,The Time Machine,H. G. Wells,-2366755200,9798735146254,14,1,1
+/works/OL35431712W,The War of the Worlds,H. G. Wells,-189388800,9798687318716,14,1,1
+/works/OL3411044W,Dracula,"Leatherdale, Clive.",473385600,9781874287445,14,1,1
+/works/OL34412196W,Frankenstein,Mary Shelley,1167609600,9798735084143,14,1,1
+/works/OL28967062W,The Strange Case of Dr Jekyll and Mr Hyde,Robert Louis Stevenson,1451606400,9781365272141,14,1,1
+/works/OL3171069W,The Haunting of Hill House,Shirley Jackson,1199145600,9798518176904,14,1,1
+/works/OL81633W,The Shining,Stephen King,220924800,9780816156856,14,1,1
+/works/OL27495W,The Silmarillion,J.R.R. Tolkien,1420070400,9780812423020,14,1,1
+/works/OL17419188W,The Hunger Games,Nicola Balkind,1388534400,9781783202041,14,1,1
+/works/OL36525862W,The fault in our stars,Ke Ar Mira,1325376000,9789391234515,14,1,1
+/works/OL46472W,The Absolutely True Diary of a Part-Time Indian,Sherman Alexie,1230768000,9780316015424,14,1,1
+/works/OL875437W,The Perks of Being a Wallflower,Stephen Chbosky,915148800,9781471116179,14,1,1
+/works/OL41495W,A Wrinkle in Time,Madeleine L'Engle,-252460800,9789651301766,14,1,1
+/works/OL1846076W,The Giver,Lois Lowry,725846400,9789531968812,14,1,1
+/works/OL2718328W,The Outsiders,S. E. Hinton,-94694400,9781484492222,14,1,1
+/works/OL4321141W,The Secret History,Donna Tartt,1199145600,9789650713058,14,1,1
+/works/OL1865528W,The Bell Jar,Sylvia Plath,725846400,9798847857741,14,1,1
+/works/OL277730W,The Awakening,Lisa Jane Smith,1199145600,9788501086150,14,1,1
+/works/OL35854114W,Middlemarch,George Eliot,1577836800,9798581217306,14,1,1
+/works/OL19742136W,The trial,James Patterson,1467331200,9781786530257,14,1,1
