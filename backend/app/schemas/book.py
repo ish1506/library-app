@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import (
@@ -109,6 +110,15 @@ class BookResponse(BaseModel):
 
 
 class BookListQuery(BaseModel):
+    class SortBy(StrEnum):
+        TITLE = "title"
+        AUTHOR = "author"
+        DATE = "date"
+
+    class SortOrder(StrEnum):
+        ASC = "asc"
+        DESC = "desc"
+
     q: str | None = None
     date_from: Annotated[
         int | None,
@@ -116,6 +126,8 @@ class BookListQuery(BaseModel):
             {"anyOf": [{"type": "string"}, {"type": "null"}]}, mode="validation"
         ),
     ] = None
+    sort_by: SortBy | None = None
+    sort_order: SortOrder | None = None
     date_to: Annotated[
         int | None,
         WithJsonSchema(
@@ -140,6 +152,13 @@ class BookListQuery(BaseModel):
             return None
         return _parse_publication_date(value)
 
+    @field_validator("sort_by", "sort_order", mode="before")
+    @classmethod
+    def normalize_sort_option(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip().lower()
+        return value
+
     @model_validator(mode="after")
     def validate_date_range(self) -> "BookListQuery":
         if (
@@ -148,4 +167,6 @@ class BookListQuery(BaseModel):
             and self.date_from > self.date_to
         ):
             raise ValueError("date_from must not be after date_to")
+        if self.sort_order is not None and self.sort_by is None:
+            raise ValueError("sort_order requires sort_by")
         return self

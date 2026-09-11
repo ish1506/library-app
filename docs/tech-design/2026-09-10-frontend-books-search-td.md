@@ -28,7 +28,7 @@ Success means the frontend sends only the active filters using the documented qu
 - Extend `listBooks` with an optional filters argument rather than adding a second list method. Preserve the existing bearer header, response guard, error normalization, and `VITE_API_BASE_URL` behavior.
 - Reset the applied and draft filters when signing out. Successful create, update, delete, and retry operations refresh using the current applied filters so the user remains in the same catalogue context.
 - Treat a successful filtered response with zero books as a distinct empty-search state, showing the active criteria and a clear action; retain the existing unfiltered empty-catalogue message when no filters are applied.
-- Keep detail navigation, admin-only mutation controls, in-memory authentication, and the current role capability model unchanged. Do not add URL routing, persistent filter storage, pagination, sorting controls, autocomplete, fuzzy search, or frontend date formatting changes outside the filter controls.
+- Keep detail navigation, admin-only mutation controls, in-memory authentication, and the current role capability model unchanged. Sorting is covered by the follow-up catalogue sorting design; this search slice must preserve applied sorting when refreshing results. Do not add URL routing, persistent filter storage, pagination, autocomplete, fuzzy search, or frontend date formatting changes outside the filter controls.
 - Handle `401` as the existing session-expired/sign-out path, `403` as a catalogue access error, and network/422/unexpected responses through the existing `BooksApiError` presentation path.
 
 ## Diagram
@@ -51,7 +51,7 @@ flowchart LR
 5. Render the accessible filter form above the catalogue list. Use labels, controlled inputs, `aria-describedby` for range validation, `aria-live`/alert feedback for invalid ranges and request failures, disabled pending controls, and a clear action that immediately reloads the unfiltered catalogue.
 6. Render separate unfiltered-empty and filtered-empty messages. Include a concise summary of active criteria and a clear-filters action without exposing raw implementation details or changing the existing book-card/detail markup.
 7. Extend `App.test.tsx` for applying combined filters, clearing filters, one-sided bounds, invalid reversed ranges without a request, filtered empty results, preserving filters across retry/mutation refresh, and retaining admin/user control differences.
-8. Update the root README frontend section with the available search/date filters, inclusive date semantics, and the explicit apply behavior. Do not modify backend documentation or the generated OpenAPI file in this frontend slice.
+8. Update the root README frontend section with the available search/date filters, inclusive date semantics, and the explicit apply behavior. Catalogue sorting is implemented in `docs/tech-design/2026-09-11-books-sorting-td.md`. Do not modify backend documentation or the generated OpenAPI file in this frontend slice.
 
 ## Files and Interfaces
 

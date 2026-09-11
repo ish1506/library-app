@@ -32,6 +32,7 @@ class FakeSession:
         self.next_id = 1
         self.pending: Book | None = None
         self.user = user
+        self.last_query: str | None = None
 
     async def get(self, model: type[Book] | type[User], item_id: int) -> Book | User | None:
         if model is User:
@@ -45,6 +46,7 @@ class FakeSession:
             return ScalarResult([])
         books = list(self.books.values())
         statement = str(query)
+        self.last_query = statement
         params = getattr(query.compile(), "params", {})
         if "websearch_to_tsquery" in statement:
             search = params["websearch_to_tsquery_2"]
@@ -64,7 +66,23 @@ class FakeSession:
         if "books.date <=" in statement:
             upper = date_values.pop(0)
             books = [book for book in books if book.date <= upper]
-        return ScalarResult(sorted(books, key=lambda book: book.id))
+        books.sort(key=lambda book: book.id)
+        if "lower(books.title)" in statement:
+            books.sort(
+                key=lambda book: book.title.lower(),
+                reverse=" DESC" in statement.split("lower(books.title)", 1)[1].split(",", 1)[0],
+            )
+        elif "lower(books.author)" in statement:
+            books.sort(
+                key=lambda book: book.author.lower(),
+                reverse=" DESC" in statement.split("lower(books.author)", 1)[1].split(",", 1)[0],
+            )
+        elif "books.date" in statement and "ORDER BY" in statement:
+            books.sort(
+                key=lambda book: book.date,
+                reverse="books.date DESC" in statement,
+            )
+        return ScalarResult(books)
 
     async def scalar(self, query: object) -> Book | int | None:
         if "book_reservations" in str(query):
@@ -289,6 +307,56 @@ def test_books_can_be_searched_and_filtered_by_date() -> None:
     assert len(
         client.get("/books?q=  ursula  &date_to=1969-03-01T08:00:00Z").json()
     ) == 2
+
+
+def test_books_can_be_sorted_case_insensitively_with_id_tie_breaking() -> None:
+    session = FakeSession()
+    client = client_for(session)
+    client.post("/books", json=book_payload(title="zeta", author="Beta", date="1970-01-01T00:00:00Z"))
+    client.post(
+        "/books",
+        json=book_payload(
+            title="Alpha",
+            author="alpha",
+            date="1960-01-01T00:00:00Z",
+            isbn="9780151554658",
+        ),
+    )
+    client.post(
+        "/books",
+        json=book_payload(
+            title="alpha",
+            author="Gamma",
+            date="1960-01-01T00:00:00Z",
+            isbn="9780547773742",
+        ),
+    )
+
+    assert [book["id"] for book in client.get("/books?sort_by=title").json()] == [2, 3, 1]
+    assert [book["id"] for book in client.get("/books?sort_by=title&sort_order=desc").json()] == [1, 2, 3]
+    assert [book["id"] for book in client.get("/books?sort_by=author").json()] == [2, 1, 3]
+    assert [book["id"] for book in client.get("/books?sort_by=date&sort_order=desc").json()] == [1, 2, 3]
+
+
+def test_explicit_sort_overrides_search_relevance() -> None:
+    session = FakeSession()
+    client = client_for(session)
+    client.post("/books", json=book_payload(title="Zulu", isbn="9780151554658"))
+    client.post("/books", json=book_payload(title="Alpha", isbn="9780547773742"))
+
+    response = client.get("/books?q=the&sort_by=title")
+
+    assert response.status_code == 200
+    assert "ts_rank_cd" not in session.last_query
+
+
+def test_book_sort_query_parameters_are_validated() -> None:
+    client = client_for(FakeSession())
+
+    assert client.get("/books?sort_by=unknown").status_code == 422
+    assert client.get("/books?sort_order=sideways").status_code == 422
+    assert client.get("/books?sort_order=asc").status_code == 422
+    assert client.get("/books?sort_by=TITLE&sort_order=DESC").status_code == 200
 
 
 def test_book_search_rejects_invalid_query_parameters() -> None:

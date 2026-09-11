@@ -9,7 +9,8 @@ from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan, LoanStatus
 from app.models.user import Role, User
-from app.routers.books import book_search_vector
+from app.routers.books import book_search_vector, book_sort_expression
+from app.schemas.book import BookListQuery
 from sqlalchemy import create_engine, delete, func, insert, inspect, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
@@ -274,6 +275,54 @@ def test_books_search_indexes_and_predicates(database_url: str) -> None:
             select(Book.title).where(Book.date >= 1, Book.date <= 1)
         ).scalars().all()
         assert date_results == ["The Dispossessed"]
+    finally:
+        transaction.rollback()
+        connection.close()
+        engine.dispose()
+
+
+def test_books_sort_expressions_order_case_insensitive_and_by_id(
+    database_url: str,
+) -> None:
+    engine = create_engine(database_url)
+    connection = engine.connect()
+    transaction = connection.begin()
+    try:
+        rows = [
+            ("zulu", "Beta", 2),
+            ("Alpha", "alpha", 1),
+            ("alpha", "Gamma", 1),
+        ]
+        ids = [
+            connection.execute(
+                insert(Book)
+                .values(
+                    title=title,
+                    author=author,
+                    date=date,
+                    isbn=f"978{uuid4().int % 10_000_000_000:010d}",
+                    loan_duration_days=14,
+                    total_copies=1,
+                    available_copies=1,
+                )
+                .returning(Book.id)
+            ).scalar_one()
+            for title, author, date in rows
+        ]
+
+        title_ids = connection.execute(
+            select(Book.id)
+            .where(Book.id.in_(ids))
+            .order_by(book_sort_expression(BookListQuery.SortBy.TITLE), Book.id.asc())
+        ).scalars().all()
+        date_ids = connection.execute(
+            select(Book.id)
+            .where(Book.id.in_(ids))
+            .order_by(book_sort_expression(BookListQuery.SortBy.DATE).desc(), Book.id.asc())
+        ).scalars().all()
+
+        assert title_ids == [ids[1], ids[2], ids[0]]
+        assert date_ids == [ids[0], ids[1], ids[2]]
     finally:
         transaction.rollback()
         connection.close()

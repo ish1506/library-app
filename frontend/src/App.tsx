@@ -10,6 +10,8 @@ import {
   type Book,
   type BookCreate,
   type BookListFilters,
+  type BookSortBy,
+  type BookSortOrder,
   updateBook,
 } from './api/books'
 import { borrowBook, listBookLoans, listMyLoans, LoansApiError, LoanStatus, returnLoan, type BookLoan } from './api/loans'
@@ -28,12 +30,23 @@ type FormValues = {
   loan_duration_days: string
   total_copies: string
 }
-type DateFilterDraft = { q: string; date_from: string; date_to: string }
+type SortSelection = '' | `${BookSortBy}:${BookSortOrder}`
+type DateFilterDraft = { q: string; date_from: string; date_to: string; sort: SortSelection }
 
 const emptyForm: FormValues = {
   title: '', author: '', date: '', isbn: '', loan_duration_days: '', total_copies: '',
 }
-const emptyDateFilters: DateFilterDraft = { q: '', date_from: '', date_to: '' }
+const emptyDateFilters: DateFilterDraft = { q: '', date_from: '', date_to: '', sort: '' }
+
+const sortOptions: Array<{ value: SortSelection; label: string }> = [
+  { value: '', label: 'Relevance (default)' },
+  { value: 'title:asc', label: 'Title A-Z' },
+  { value: 'title:desc', label: 'Title Z-A' },
+  { value: 'author:asc', label: 'Author A-Z' },
+  { value: 'author:desc', label: 'Author Z-A' },
+  { value: 'date:asc', label: 'Publication date oldest' },
+  { value: 'date:desc', label: 'Publication date newest' },
+]
 
 function decodeRole(token: string): Role | null {
   try {
@@ -94,11 +107,12 @@ function availability(book: Book): { label: string; available: boolean } {
 }
 
 function filtersFromDraft(draft: DateFilterDraft): BookListFilters {
-  return { q: draft.q.trim() || undefined, date_from: draft.date_from ? `${draft.date_from}T00:00:00Z` : undefined, date_to: draft.date_to ? `${draft.date_to}T23:59:59Z` : undefined }
+  const [sort_by, sort_order] = draft.sort ? draft.sort.split(':') as [BookSortBy, BookSortOrder] : []
+  return { q: draft.q.trim() || undefined, date_from: draft.date_from ? `${draft.date_from}T00:00:00Z` : undefined, date_to: draft.date_to ? `${draft.date_to}T23:59:59Z` : undefined, sort_by, sort_order }
 }
 
 function filtersAreActive(filters: BookListFilters): boolean {
-  return Boolean(filters.q || filters.date_from || filters.date_to)
+  return Boolean(filters.q || filters.date_from || filters.date_to || filters.sort_by)
 }
 
 function filterSummary(filters: BookListFilters): string {
@@ -106,6 +120,10 @@ function filterSummary(filters: BookListFilters): string {
   if (filters.q) criteria.push(`"${filters.q}"`)
   if (filters.date_from) criteria.push(`from ${filters.date_from.slice(0, 10)}`)
   if (filters.date_to) criteria.push(`to ${filters.date_to.slice(0, 10)}`)
+  if (filters.sort_by && filters.sort_order) {
+    const option = sortOptions.find(({ value }) => value === `${filters.sort_by}:${filters.sort_order}`)
+    if (option) criteria.push(`sorted by ${option.label.toLowerCase()}`)
+  }
   return criteria.join(' · ')
 }
 
@@ -567,7 +585,7 @@ function App() {
     {requestError && <div className="error-summary" role="alert" tabIndex={-1}>{requestError}</div>}
       {currentRole === 'USER' && notificationsOpen && <aside className="notification-panel" aria-labelledby="notifications-heading"><div className="section-heading"><div><p className="eyebrow">Member updates</p><h2 id="notifications-heading">Notifications</h2></div><button className="button-secondary" type="button" onClick={() => setNotificationsOpen(false)}>Close</button></div>{notificationError && <p className="field-error" role="alert">{notificationError}</p>}{notifications.length === 0 ? <p className="muted">No unread notifications.</p> : <div className="notification-list">{notifications.map((notification) => { const title = payloadText(notification, 'title') ?? `Book #${notification.reservation_id ?? 'unknown'}`; const deadline = payloadTimestamp(notification); return <article className="notification-card" key={notification.id}><div><h3>{title} is ready</h3><p className="muted">{payloadText(notification, 'author') ?? 'A reserved title'}{deadline ? ` · Hold until ${formatLoanDate(deadline)}` : ''}</p></div><button className="button-secondary" type="button" onClick={() => void handleNotificationRead(notification)}>Mark read</button></article> })}</div>}</aside>}
      {view === 'list' && <section aria-labelledby="catalogue-heading"><div className="section-heading"><div><h2 id="catalogue-heading">Catalogue</h2><p className="muted">Browse the library collection and check availability.</p></div>{currentRole === 'ADMIN' && <button type="button" onClick={openCreate}>Add book</button>}</div>
-       <form className="filter-panel" onSubmit={applyFilters} aria-label="Filter catalogue"><fieldset disabled={isPending || listLoading}><div className="filter-fields"><div className="field"><label htmlFor="catalogue-search">Search title or author</label><input id="catalogue-search" type="search" value={draftFilters.q} onChange={(event) => setDraftFilters({ ...draftFilters, q: event.target.value })} /></div><div className="field"><label htmlFor="date-from">Publication date from</label><input id="date-from" type="date" value={draftFilters.date_from} onChange={(event) => setDraftFilters({ ...draftFilters, date_from: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div><div className="field"><label htmlFor="date-to">Publication date to</label><input id="date-to" type="date" value={draftFilters.date_to} onChange={(event) => setDraftFilters({ ...draftFilters, date_to: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div></div><div className="filter-actions"><button type="submit">Apply filters</button><button className="button-secondary" type="button" onClick={clearFilters}>Clear filters</button></div></fieldset>{filterError && <p className="field-error" id="filter-error" role="alert">{filterError}</p>}</form>
+      <form className="filter-panel" onSubmit={applyFilters} aria-label="Filter catalogue"><fieldset disabled={isPending || listLoading}><div className="filter-fields"><div className="field"><label htmlFor="catalogue-search">Search title or author</label><input id="catalogue-search" type="search" value={draftFilters.q} onChange={(event) => setDraftFilters({ ...draftFilters, q: event.target.value })} /></div><div className="field"><label htmlFor="date-from">Publication date from</label><input id="date-from" type="date" value={draftFilters.date_from} onChange={(event) => setDraftFilters({ ...draftFilters, date_from: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div><div className="field"><label htmlFor="date-to">Publication date to</label><input id="date-to" type="date" value={draftFilters.date_to} onChange={(event) => setDraftFilters({ ...draftFilters, date_to: event.target.value })} aria-invalid={Boolean(filterError)} aria-describedby={filterError ? 'filter-error' : undefined} /></div><div className="field"><label htmlFor="catalogue-sort">Sort catalogue</label><select id="catalogue-sort" value={draftFilters.sort} onChange={(event) => setDraftFilters({ ...draftFilters, sort: event.target.value as SortSelection })}>{sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div></div><div className="filter-actions"><button type="submit">Apply filters</button><button className="button-secondary" type="button" onClick={clearFilters}>Clear filters</button></div></fieldset>{filterError && <p className="field-error" id="filter-error" role="alert">{filterError}</p>}</form>
        {filtersAreActive(appliedFilters) && <p className="active-filters" aria-live="polite">Showing results for {filterSummary(appliedFilters)}</p>}
       {listLoading && <p className="status" role="status">Loading catalogue...</p>}
       {listError && <div className="error-summary" role="alert">{listError}<button type="button" className="button-secondary" onClick={() => void refreshBooks()}>Retry</button></div>}

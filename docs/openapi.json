@@ -92,6 +92,38 @@
             }
           },
           {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SortBy"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort By"
+            }
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SortOrder"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Order"
+            }
+          },
+          {
             "name": "date_to",
             "in": "query",
             "required": false,
@@ -1237,6 +1269,23 @@
           5
         ],
         "title": "ReservationStatus"
+      },
+      "SortBy": {
+        "type": "string",
+        "enum": [
+          "title",
+          "author",
+          "date"
+        ],
+        "title": "SortBy"
+      },
+      "SortOrder": {
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ],
+        "title": "SortOrder"
       },
       "TokenResponse": {
         "properties": {

@@ -150,15 +150,21 @@ curl -X POST http://127.0.0.1:8000/books \
   }'
 ```
 
-`GET /books` lists the catalogue and accepts optional `q`, `date_from`, and
-`date_to` query parameters. `q` searches title and author terms, while the
-inclusive date bounds accept offset-aware ISO 8601 datetimes. For example:
+`GET /books` lists the catalogue and accepts optional `q`, `date_from`,
+`date_to`, `sort_by`, and `sort_order` query parameters. `q` searches title
+and author terms, while the inclusive date bounds accept offset-aware ISO 8601
+datetimes. `sort_by` accepts `title`, `author`, or `date`; `sort_order` accepts
+`asc` or `desc` and requires `sort_by`. Title and author sorting is
+case-insensitive. Without an explicit sort, results use ID ascending, or
+relevance descending then ID ascending for searches. For example:
 
 ```bash
 curl --get 'http://127.0.0.1:8000/books' \
   --data-urlencode 'q=le guin' \
   --data-urlencode 'date_from=1960-01-01T00:00:00Z' \
   --data-urlencode 'date_to=1970-12-31T23:59:59Z' \
+  --data-urlencode 'sort_by=title' \
+  --data-urlencode 'sort_order=asc' \
   -H 'Authorization: Bearer <admin-token>'
 ```
 

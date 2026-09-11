@@ -16,8 +16,8 @@ h3 { font-size: 1.15rem; letter-spacing: -.02em; }
 fieldset { margin: 0; padding: 0; border: 0; }
 .field { margin-bottom: 1.25rem; }
 label { display: block; margin-bottom: .45rem; color: var(--heading); font-weight: 650; }
-input, button { box-sizing: border-box; min-height: 2.9rem; border-radius: .5rem; font: inherit; }
-input { width: 100%; padding: .65rem .75rem; color: var(--heading); background: var(--surface); border: 1px solid var(--input-border); }
+input, select, button { box-sizing: border-box; min-height: 2.9rem; border-radius: .5rem; font: inherit; }
+input, select { width: 100%; padding: .65rem .75rem; color: var(--heading); background: var(--surface); border: 1px solid var(--input-border); }
 button { padding: .65rem 1rem; color: #fff; background: var(--accent); border: 1px solid var(--accent); font-weight: 700; cursor: pointer; }
 button:hover:not(:disabled) { background: var(--accent-dark); }
 button:disabled { cursor: progress; opacity: .7; }
@@ -73,7 +73,7 @@ button:disabled { cursor: progress; opacity: .7; }
 .dialog { width: min(100%, 28rem); padding: 1.5rem; background: var(--surface); border-radius: .75rem; box-shadow: 0 1.5rem 4rem rgb(20 40 61 / 25%); }
 .dialog p { color: var(--muted); line-height: 1.5; }
 .dialog .eyebrow { color: var(--error-text); }
-input:focus-visible, button:focus-visible, .error-summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+input:focus-visible, select:focus-visible, button:focus-visible, .error-summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 @media (max-width: 42rem) { .app-shell { width: min(100% - 2rem, 72rem); padding-top: 1rem; } .app-header, .section-heading, .detail-heading, .book-card, .loan-card, .notification-card, .reservation-callout { align-items: stretch; flex-direction: column; } .header-actions, .inline-actions { justify-content: space-between; } .header-actions button, .book-card button, .loan-card button, .notification-card button, .reservation-callout button { width: 100%; } .metadata, .form-grid, .filter-fields { grid-template-columns: 1fr; } .form-grid .field:first-child, .form-grid .field:nth-child(2) { grid-column: auto; } .filter-actions button { flex: 1; } }
 @media (prefers-reduced-motion: no-preference) { .panel, .book-card { animation: arrive 180ms ease-out; } }
 @keyframes arrive { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: translateY(0); } }

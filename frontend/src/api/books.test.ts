@@ -32,6 +32,36 @@ describe('books API', () => {
     )
   })
 
+  it.each([
+    ['title', 'asc'], ['title', 'desc'],
+    ['author', 'asc'], ['author', 'desc'],
+    ['date', 'asc'], ['date', 'desc'],
+  ] as const)('encodes %s %s sorting', async (sort_by, sort_order) => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([book]), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await listBooks('secret-token', { sort_by, sort_order })
+
+    expect(fetchMock).toHaveBeenCalledWith(`/books?sort_by=${sort_by}&sort_order=${sort_order}`, {
+      headers: { Authorization: 'Bearer secret-token' },
+    })
+  })
+
+  it('combines sorting with the existing filters and omits absent sort values', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([book]), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await listBooks('secret-token', {
+      q: 'Dune', date_from: '2024-01-01T00:00:00Z', date_to: '2024-01-31T23:59:59Z',
+      sort_by: 'author', sort_order: 'desc',
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/books?q=Dune&date_from=2024-01-01T00%3A00%3A00Z&date_to=2024-01-31T23%3A59%3A59Z&sort_by=author&sort_order=desc',
+      { headers: { Authorization: 'Bearer secret-token' } },
+    )
+  })
+
   it('omits blank optional filters and supports one-sided bounds', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify([book]), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)

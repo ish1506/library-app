@@ -40,6 +40,14 @@ def book_search_vector():
     )
 
 
+def book_sort_expression(sort_by: BookListQuery.SortBy):
+    return {
+        BookListQuery.SortBy.TITLE: func.lower(Book.title),
+        BookListQuery.SortBy.AUTHOR: func.lower(Book.author),
+        BookListQuery.SortBy.DATE: Book.date,
+    }[sort_by]
+
+
 def isbn_conflict(error: IntegrityError) -> bool:
     return (
         getattr(getattr(error.orig, "diag", None), "constraint_name", None)
@@ -78,7 +86,14 @@ async def list_books(
     if query.date_to is not None:
         statement = statement.where(Book.date <= query.date_to)
 
-    if query.q is not None:
+    if query.sort_by is not None:
+        sort_expression = book_sort_expression(query.sort_by)
+        if query.sort_order == BookListQuery.SortOrder.DESC:
+            sort_expression = sort_expression.desc()
+        else:
+            sort_expression = sort_expression.asc()
+        statement = statement.order_by(sort_expression, Book.id.asc())
+    elif query.q is not None:
         statement = statement.order_by(
             desc(
                 func.ts_rank_cd(

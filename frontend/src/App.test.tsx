@@ -125,11 +125,47 @@ describe('App', () => {
     fireEvent.change(screen.getByLabelText('Search title or author'), { target: { value: 'Dune' } })
     fireEvent.change(screen.getByLabelText('Publication date from'), { target: { value: '2024-01-01' } })
     fireEvent.change(screen.getByLabelText('Publication date to'), { target: { value: '2024-01-31' } })
+    fireEvent.change(screen.getByLabelText('Sort catalogue'), { target: { value: 'author:desc' } })
     fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
     await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {
       q: 'Dune', date_from: '2024-01-01T00:00:00Z', date_to: '2024-01-31T23:59:59Z',
+      sort_by: 'author', sort_order: 'desc',
     }))
     expect(screen.getByRole('heading', { name: 'No matching books' })).toBeInTheDocument()
+  })
+
+  it('keeps the default sort out of the list request and resets an applied sort', async () => {
+    listBooksMock.mockResolvedValue([])
+    render(<App />)
+    await signIn('USER')
+
+    expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {})
+    fireEvent.change(screen.getByLabelText('Sort catalogue'), { target: { value: 'title:asc' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
+    await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {
+      sort_by: 'title', sort_order: 'asc',
+    }))
+    expect(screen.getByText(/sorted by title a-z/)).toBeInTheDocument()
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Clear filters' })[0])
+    await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {}))
+    expect(screen.getByLabelText('Sort catalogue')).toHaveValue('')
+  })
+
+  it('preserves applied sorting when retrying a failed catalogue request', async () => {
+    listBooksMock
+      .mockResolvedValueOnce([])
+      .mockRejectedValueOnce(new Error('temporary failure'))
+      .mockResolvedValueOnce([])
+    render(<App />)
+    await signIn('USER')
+    fireEvent.change(screen.getByLabelText('Sort catalogue'), { target: { value: 'date:desc' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('temporary failure')
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    await waitFor(() => expect(listBooksMock).toHaveBeenLastCalledWith('header.eyJyb2xlIjoiVVNFUiJ9.signature', {
+      sort_by: 'date', sort_order: 'desc',
+    }))
   })
 
   it('rejects reversed dates without reloading and clears the active filters', async () => {

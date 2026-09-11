@@ -24,6 +24,12 @@ curl --get '{{baseUrl}}/books' \
 curl --request GET '{{baseUrl}}/books/{{bookId}}' \
   --header 'Authorization: Bearer {{adminToken}}'
 
+# Sort the catalogue by title (use author or date for sort_by, and desc for reverse order).
+curl --get '{{baseUrl}}/books' \
+  --data-urlencode 'sort_by=title' \
+  --data-urlencode 'sort_order=asc' \
+  --header 'Authorization: Bearer {{adminToken}}'
+
 # Create a book with zero copies. The date must include a timezone offset.
 curl --request POST '{{baseUrl}}/books' \
   --header 'Authorization: Bearer {{adminToken}}' \

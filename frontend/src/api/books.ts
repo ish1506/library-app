@@ -20,10 +20,15 @@ export type BookCreate = {
 
 export type BookUpdate = Partial<BookCreate>
 
+export type BookSortBy = 'title' | 'author' | 'date'
+export type BookSortOrder = 'asc' | 'desc'
+
 export type BookListFilters = {
   q?: string
   date_from?: string
   date_to?: string
+  sort_by?: BookSortBy
+  sort_order?: BookSortOrder
 }
 
 export class BooksApiError extends Error {
@@ -97,6 +102,8 @@ export async function listBooks(token: string, filters: BookListFilters = {}): P
   if (filters.q?.trim()) params.set('q', filters.q.trim())
   if (filters.date_from) params.set('date_from', filters.date_from)
   if (filters.date_to) params.set('date_to', filters.date_to)
+  if (filters.sort_by) params.set('sort_by', filters.sort_by)
+  if (filters.sort_order) params.set('sort_order', filters.sort_order)
   const query = params.toString()
   const body = await request<unknown>(query ? `/books?${query}` : '/books', token)
   if (!Array.isArray(body) || !body.every(isBook)) {
