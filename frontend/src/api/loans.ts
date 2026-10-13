@@ -91,6 +91,15 @@ export async function listBookLoans(token: string, bookId: number): Promise<Book
   return body
 }
 
-export async function returnLoan(token: string, loanId: number): Promise<BookLoan> {
-  return validateLoan(await request<unknown>(`/loans/${loanId}/return`, token, { method: 'POST' }))
+export async function returnLoan(
+  token: string,
+  loanId: number,
+  userRating: number,
+): Promise<BookLoan> {
+  return validateLoan(
+    await request<unknown>(`/loans/${loanId}/return`, token, {
+      method: 'POST',
+      body: JSON.stringify({ user_rating: userRating }),
+    }),
+  )
 }

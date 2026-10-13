@@ -1,9 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { login } from './api/auth'
 import { getBook, listBooks } from './api/books'
-import { borrowBook, listBookLoans, listMyLoans, LoansApiError } from './api/loans'
+import { borrowBook, listBookLoans, listMyLoans, LoansApiError, returnLoan } from './api/loans'
 import { createReservation, listMyReservations } from './api/reservations'
 import { listUnreadNotifications, markNotificationRead } from './api/notifications'
 
@@ -92,6 +92,52 @@ async function signIn(role: 'ADMIN' | 'USER') {
 }
 
 describe('App', () => {
+  it('previews stars without selecting and returns a loan with its selected rating', async () => {
+    const loan = {
+      id: 4,
+      book_id: 1,
+      user_id: 8,
+      loan_timestamp: 100,
+      due_at_timestamp: 200,
+      returned_timestamp: null,
+      status: 1 as const,
+      late_fee_cents: 0,
+    }
+    const returnedLoan = { ...loan, status: 2 as const, returned_timestamp: 300 }
+    listBooksMock.mockResolvedValue([])
+    listMyLoansMock.mockResolvedValue([loan])
+    vi.mocked(returnLoan).mockResolvedValueOnce(returnedLoan)
+    render(<App />)
+    await signIn('USER')
+    fireEvent.click(screen.getByRole('button', { name: 'My loans' }))
+
+    const returnButton = await screen.findByRole('button', { name: 'Return book' })
+    const stars = screen.getAllByRole('radio')
+    const fourthStar = screen.getByRole('radio', { name: '4 stars' })
+    expect(returnButton).toBeDisabled()
+    fireEvent.mouseEnter(fourthStar.closest('label')!)
+    expect(
+      stars.slice(0, 4).every((star) => star.nextElementSibling?.classList.contains('star-filled')),
+    ).toBe(true)
+    expect(stars[4].nextElementSibling).not.toHaveClass('star-filled')
+    expect(fourthStar).not.toBeChecked()
+    expect(returnButton).toBeDisabled()
+    fireEvent.mouseLeave(fourthStar.closest('label')!)
+    expect(stars[0].nextElementSibling).not.toHaveClass('star-filled')
+
+    fireEvent.click(fourthStar)
+    expect(fourthStar).toBeChecked()
+    expect(returnButton).toBeEnabled()
+    fireEvent.mouseEnter(screen.getByRole('radio', { name: '2 stars' }).closest('label')!)
+    fireEvent.mouseLeave(screen.getByRole('radio', { name: '2 stars' }).closest('label')!)
+    expect(fourthStar.nextElementSibling).toHaveClass('star-filled')
+    listMyLoansMock.mockResolvedValue([returnedLoan])
+    fireEvent.click(returnButton)
+    await waitFor(() => expect(returnLoan).toHaveBeenCalledWith(token('USER'), 4, 4))
+    const history = await screen.findByRole('heading', { name: 'Returned history' })
+    expect(within(history.closest('section')!).queryByRole('radio')).not.toBeInTheDocument()
+  })
+
   it('announces client-side login validation without sending a request', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
