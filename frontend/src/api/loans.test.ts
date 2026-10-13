@@ -46,7 +46,6 @@ describe('loans API', () => {
 
     await expect(listBookLoans('token', 2)).resolves.toEqual([loan])
     expect(fetchMock).toHaveBeenCalledWith('/books/2/loans', {
-      method: 'GET',
       headers: { Authorization: 'Bearer token' },
     })
   })
