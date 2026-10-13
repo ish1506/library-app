@@ -3,6 +3,7 @@ from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -121,13 +122,21 @@ async def return_loan(
     loan.returned_timestamp = now
     await promote_returned_copy(db, book, now)
 
-    rating = BookRating(
+    rating = insert(BookRating).values(
         book_id=book.id,
         user_id=user.id,
-        timestamp=timestamp(),
+        timestamp=now,
         rating=body.user_rating,
     )
-    db.add(rating)
+    await db.execute(
+        rating.on_conflict_do_update(
+            index_elements=[BookRating.user_id, BookRating.book_id],
+            set_={
+                "rating": rating.excluded.rating,
+                "timestamp": rating.excluded.timestamp,
+            },
+        )
+    )
     await db.commit()
     await db.refresh(loan)
     return loan

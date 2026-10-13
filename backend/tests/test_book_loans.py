@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan
+from app.models.book_rating import BookRating
 from app.models.enums import LoanStatus, Role
 from app.models.user import User
 from app.services.auth import create_access_token
@@ -120,6 +121,7 @@ def loan_fixture(database_url: str) -> Generator[LoanFixture, None, None]:
     finally:
         app.dependency_overrides.clear()
         with engine.begin() as connection:
+            connection.execute(delete(BookRating).where(BookRating.book_id == book_id))
             connection.execute(delete(BookLoan).where(BookLoan.book_id == book_id))
             connection.execute(delete(Book).where(Book.id == book_id))
             connection.execute(
@@ -211,6 +213,73 @@ def test_loan_lifecycle_inventory_and_history(loan_fixture: LoanFixture) -> None
             select(Book.available_copies).where(Book.id == fixture.book_id)
         ).scalar_one()
         assert available_copies == 1
+
+
+def test_repeat_borrow_return_updates_rating(
+    loan_fixture: LoanFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = loan_fixture
+    headers = {"Authorization": f"Bearer {create_access_token(fixture.user)}"}
+    client = TestClient(app)
+    rating_id = None
+    returned_at = None
+    loan_ids = []
+
+    for user_rating in (2, 5):
+        borrowed = client.post(f"/books/{fixture.book_id}/loans", headers=headers)
+        assert borrowed.status_code == 201
+        loan = borrowed.json()
+        loan_ids.append(loan["id"])
+        with fixture.engine.connect() as connection:
+            assert (
+                connection.scalar(
+                    select(Book.available_copies).where(Book.id == fixture.book_id)
+                )
+                == 0
+            )
+
+        returned_at = max(returned_at or 0, loan["loan_timestamp"]) + 1
+        monkeypatch.setattr(
+            "app.routers.loans.timestamp", lambda value=returned_at: value
+        )
+        returned = client.post(
+            f"/loans/{loan['id']}/return",
+            headers=headers,
+            json={"user_rating": user_rating},
+        )
+        assert returned.status_code == 200
+        assert returned.json()["status"] == LoanStatus.RETURNED
+        assert returned.json()["returned_timestamp"] == returned_at
+
+        with fixture.engine.connect() as connection:
+            ratings = connection.execute(
+                select(BookRating.__table__).where(
+                    BookRating.user_id == fixture.user.id,
+                    BookRating.book_id == fixture.book_id,
+                )
+            ).all()
+            assert len(ratings) == 1
+            rating = ratings[0]
+            if rating_id is None:
+                rating_id = rating.id
+            assert rating.id == rating_id
+            assert rating.rating == user_rating
+            assert rating.timestamp == returned_at
+            assert (
+                connection.scalar(
+                    select(Book.available_copies).where(Book.id == fixture.book_id)
+                )
+                == 1
+            )
+
+    assert len(set(loan_ids)) == 2
+    with fixture.engine.connect() as connection:
+        statuses = (
+            connection.execute(select(BookLoan.status).where(BookLoan.id.in_(loan_ids)))
+            .scalars()
+            .all()
+        )
+        assert statuses == [LoanStatus.RETURNED, LoanStatus.RETURNED]
 
 
 def test_concurrent_borrowing_allows_only_final_copy(loan_fixture: LoanFixture) -> None:
