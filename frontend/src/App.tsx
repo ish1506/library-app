@@ -39,6 +39,7 @@ import {
   type Notification,
 } from './api/notifications'
 import './App.css'
+import StarRating from './StarRating'
 
 type Role = 'ADMIN' | 'USER'
 type Session = { accessToken: string; role: Role }
@@ -205,6 +206,7 @@ function App() {
   const [loanLoading, setLoanLoading] = useState(false)
   const [loanError, setLoanError] = useState('')
   const [loanPendingId, setLoanPendingId] = useState<number | null>(null)
+  const [loanRatings, setLoanRatings] = useState<Record<number, number>>({})
   const [bookLoans, setBookLoans] = useState<BookLoan[]>([])
   const [bookLoanLoading, setBookLoanLoading] = useState(false)
   const [bookLoanError, setBookLoanError] = useState('')
@@ -288,6 +290,7 @@ function App() {
     setView('list')
     setDeleteConfirm(false)
     setLoans([])
+    setLoanRatings({})
     setReservations([])
     setReservationBookTitles({})
     setNotifications([])
@@ -575,10 +578,17 @@ function App() {
 
   async function handleReturn(loan: BookLoan) {
     if (!session || session.role !== 'USER' || loanPendingId !== null) return
+    const rating = loanRatings[loan.id]
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) return
     setLoanPendingId(loan.id)
     setLoanError('')
     try {
-      await returnLoan(session.accessToken, loan.id)
+      await returnLoan(session.accessToken, loan.id, rating)
+      setLoanRatings((current) => {
+        const next = { ...current }
+        delete next[loan.id]
+        return next
+      })
       await Promise.all([refreshLoans(session), refreshBooks(session)])
     } catch (error) {
       if (error instanceof LoansApiError && error.status === 401) signOut(error.message)
@@ -782,13 +792,23 @@ function App() {
           {overdue && <span className="availability overdue">Overdue</span>}
         </div>
         {active && (
-          <button
-            type="button"
-            onClick={() => void handleReturn(loan)}
-            disabled={loanPendingId !== null}
-          >
-            {loanPendingId === loan.id ? 'Returning...' : 'Return book'}
-          </button>
+          <div className="loan-return-actions">
+            <StarRating
+              name={`loan-rating-${loan.id}`}
+              value={loanRatings[loan.id] ?? 0}
+              onChange={(rating) =>
+                setLoanRatings((current) => ({ ...current, [loan.id]: rating }))
+              }
+              disabled={loanPendingId !== null}
+            />
+            <button
+              type="button"
+              onClick={() => void handleReturn(loan)}
+              disabled={loanPendingId !== null || !loanRatings[loan.id]}
+            >
+              {loanPendingId === loan.id ? 'Returning...' : 'Return book'}
+            </button>
+          </div>
         )}
       </article>
     )

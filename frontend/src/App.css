@@ -40,6 +40,18 @@ button:disabled { cursor: progress; opacity: .7; }
 .reservation-deadline { color: var(--accent-dark); font-weight: 650; }
 .book-card p { margin: .35rem 0 .75rem; color: var(--muted); }
 .loan-card p { margin: .35rem 0 .75rem; }
+.loan-return-actions { display: grid; gap: .75rem; }
+.star-rating { min-width: 0; margin: 0; padding: 0; border: 0; }
+.star-rating legend { margin-bottom: .25rem; font-weight: 700; }
+.star-rating-stars { display: flex; }
+.star-rating-option { position: relative; cursor: pointer; }
+.star-rating-option input { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; opacity: 0; }
+.star-rating-option span { display: block; padding: .15rem .25rem; color: var(--input-border); font-size: 2rem; line-height: 1.25; border-radius: .25rem; }
+.star-rating-option .star-filled { color: #a96500; }
+.star-rating-option input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+.star-rating:disabled { opacity: .7; }
+.star-rating:disabled .star-rating-option { cursor: default; }
+.loan-return-actions button:disabled { cursor: default; }
 .availability { display: inline-block; padding: .25rem .55rem; border-radius: 99rem; font-size: .85rem; font-weight: 700; }
 .available { color: var(--success-text); background: var(--success-background); }
 .unavailable { color: var(--error-text); background: var(--error-background); }

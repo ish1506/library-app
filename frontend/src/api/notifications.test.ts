@@ -18,7 +18,6 @@ describe('notifications API', () => {
       .mockResolvedValue(new Response(JSON.stringify([notification]), { status: 200 }))
     await expect(listUnreadNotifications('token')).resolves.toEqual([notification])
     expect(fetchMock).toHaveBeenCalledWith('/notifications?unread_only=true&limit=50', {
-      method: 'GET',
       headers: { Authorization: 'Bearer token' },
     })
   })

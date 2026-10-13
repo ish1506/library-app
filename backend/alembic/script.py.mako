@@ -3,13 +3,15 @@
 Revision ID: ${up_revision}
 Revises: ${down_revision | comma,n}
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 from alembic import op
 import sqlalchemy as sa
 
-${up_revision_cmds}
-
+revision: str = "${up_revision}"
+down_revision: str | Sequence[str] | None = ${repr(down_revision)}
+branch_labels = ${repr(branch_labels)}
+depends_on = ${repr(depends_on)}
 
 def upgrade() -> None:
     ${upgrades if upgrades else "pass"}

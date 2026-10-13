@@ -1,6 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.enums import LoanStatus
+
+
+class BookLoanRequest(BaseModel):
+    user_rating: int = Field(ge=1, le=5)
 
 
 class BookLoanResponse(BaseModel):

@@ -1,4 +1,5 @@
 import type { BookLoan } from './loans'
+import { createRequest } from './request'
 
 export const ReservationStatus = {
   PENDING: 1,
@@ -37,8 +38,6 @@ export class ReservationsApiError extends Error {
   }
 }
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
@@ -71,14 +70,6 @@ function isBookLoan(value: unknown): value is BookLoan {
   )
 }
 
-async function readJson(response: Response): Promise<unknown> {
-  try {
-    return await response.json()
-  } catch {
-    return undefined
-  }
-}
-
 function errorMessage(status: number, body: unknown): string {
   const detail = isRecord(body) && typeof body.detail === 'string' ? body.detail : ''
   if (status === 401) return 'Your session has expired. Sign in again.'
@@ -90,32 +81,18 @@ function errorMessage(status: number, body: unknown): string {
   )
 }
 
-async function request<T>(
-  path: string,
-  token: string,
-  method: 'GET' | 'POST' | 'DELETE',
-): Promise<T> {
-  let response: Response
-  try {
-    response = await fetch(`${apiBaseUrl}${path}`, {
-      method,
-      headers: { Authorization: `Bearer ${token}` },
-    })
-  } catch {
-    throw new ReservationsApiError(
-      0,
-      'Unable to reach the library service. Check that it is running and try again.',
-    )
-  }
-
-  const body = response.status === 204 ? undefined : await readJson(response)
-  if (!response.ok)
-    throw new ReservationsApiError(response.status, errorMessage(response.status, body))
-  return body as T
-}
+const request = createRequest(
+  (status, body) =>
+    new ReservationsApiError(
+      status,
+      status === 0
+        ? 'Unable to reach the library service. Check that it is running and try again.'
+        : errorMessage(status, body),
+    ),
+)
 
 export async function createReservation(token: string, bookId: number): Promise<BookReservation> {
-  const body = await request<unknown>(`/books/${bookId}/reservations`, token, 'POST')
+  const body = await request<unknown>(`/books/${bookId}/reservations`, token, { method: 'POST' })
   if (!isBookReservation(body))
     throw new ReservationsApiError(
       0,
@@ -125,7 +102,7 @@ export async function createReservation(token: string, bookId: number): Promise<
 }
 
 export async function listMyReservations(token: string): Promise<BookReservation[]> {
-  const body = await request<unknown>('/reservations/me?limit=50', token, 'GET')
+  const body = await request<unknown>('/reservations/me?limit=50', token)
   if (!Array.isArray(body) || !body.every(isBookReservation)) {
     throw new ReservationsApiError(
       0,
@@ -139,7 +116,9 @@ export async function confirmReservation(
   token: string,
   reservationId: number,
 ): Promise<ReservationConfirmation> {
-  const body = await request<unknown>(`/reservations/${reservationId}/confirm`, token, 'POST')
+  const body = await request<unknown>(`/reservations/${reservationId}/confirm`, token, {
+    method: 'POST',
+  })
   if (!isRecord(body) || !isBookReservation(body.reservation) || !isBookLoan(body.loan)) {
     throw new ReservationsApiError(
       0,
@@ -153,7 +132,7 @@ export async function cancelReservation(
   token: string,
   reservationId: number,
 ): Promise<BookReservation> {
-  const body = await request<unknown>(`/reservations/${reservationId}`, token, 'DELETE')
+  const body = await request<unknown>(`/reservations/${reservationId}`, token, { method: 'DELETE' })
   if (!isBookReservation(body))
     throw new ReservationsApiError(
       0,

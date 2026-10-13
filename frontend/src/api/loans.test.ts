@@ -46,7 +46,6 @@ describe('loans API', () => {
 
     await expect(listBookLoans('token', 2)).resolves.toEqual([loan])
     expect(fetchMock).toHaveBeenCalledWith('/books/2/loans', {
-      method: 'GET',
       headers: { Authorization: 'Bearer token' },
     })
   })
@@ -65,6 +64,11 @@ describe('loans API', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify(loan), { status: 200 }),
     )
-    await expect(returnLoan('token', 4)).resolves.toEqual(loan)
+    await expect(returnLoan('token', 4, 3)).resolves.toEqual(loan)
+    expect(globalThis.fetch).toHaveBeenLastCalledWith('/loans/4/return', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer token', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_rating: 3 }),
+    })
   })
 })

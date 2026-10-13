@@ -3,15 +3,17 @@ from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.book import Book
 from app.models.book_loan import BookLoan
+from app.models.book_rating import BookRating
 from app.models.enums import LoanStatus
 from app.models.user import User
 from app.routers.dependencies import require_user
-from app.schemas.book_loan import BookLoanResponse
+from app.schemas.book_loan import BookLoanRequest, BookLoanResponse
 from app.services.late_fees import calculate_late_fee_cents
 from app.services.reservations import promote_returned_copy, timestamp
 
@@ -76,6 +78,7 @@ async def list_my_loans(
 @router.post("/{loan_id}/return", response_model=BookLoanResponse)
 async def return_loan(
     loan_id: int,
+    body: BookLoanRequest,
     user: User = USER_DEPENDENCY,
     db: AsyncSession = DB_DEPENDENCY,
 ) -> BookLoan:
@@ -118,6 +121,22 @@ async def return_loan(
     loan.status = LoanStatus.RETURNED
     loan.returned_timestamp = now
     await promote_returned_copy(db, book, now)
+
+    rating = insert(BookRating).values(
+        book_id=book.id,
+        user_id=user.id,
+        timestamp=now,
+        rating=body.user_rating,
+    )
+    await db.execute(
+        rating.on_conflict_do_update(
+            index_elements=[BookRating.user_id, BookRating.book_id],
+            set_={
+                "rating": rating.excluded.rating,
+                "timestamp": rating.excluded.timestamp,
+            },
+        )
+    )
     await db.commit()
     await db.refresh(loan)
     return loan
