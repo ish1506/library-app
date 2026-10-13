@@ -1,3 +1,5 @@
+import { createRequest } from './request'
+
 export type Book = {
   id: number
   title: string
@@ -42,8 +44,6 @@ export class BooksApiError extends Error {
   }
 }
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
@@ -63,14 +63,6 @@ function isBook(value: unknown): value is Book {
   )
 }
 
-async function readJson(response: Response): Promise<unknown> {
-  try {
-    return await response.json()
-  } catch {
-    return undefined
-  }
-}
-
 function errorMessage(status: number, body: unknown): string {
   const detail = isRecord(body) && typeof body.detail === 'string' ? body.detail : ''
   if (status === 401) return 'Your session has expired. Sign in again.'
@@ -82,28 +74,15 @@ function errorMessage(status: number, body: unknown): string {
   return detail || 'The library service could not complete that request. Please try again.'
 }
 
-async function request<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
-  let response: Response
-  try {
-    response = await fetch(`${apiBaseUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
-        ...init.headers,
-      },
-    })
-  } catch {
-    throw new BooksApiError(
-      0,
-      'Unable to reach the library service. Check that it is running and try again.',
-    )
-  }
-
-  const body = response.status === 204 ? undefined : await readJson(response)
-  if (!response.ok) throw new BooksApiError(response.status, errorMessage(response.status, body))
-  return body as T
-}
+const request = createRequest(
+  (status, body) =>
+    new BooksApiError(
+      status,
+      status === 0
+        ? 'Unable to reach the library service. Check that it is running and try again.'
+        : errorMessage(status, body),
+    ),
+)
 
 export async function listBooks(token: string, filters: BookListFilters = {}): Promise<Book[]> {
   const params = new URLSearchParams()

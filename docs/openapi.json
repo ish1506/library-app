@@ -548,6 +548,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookLoanRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -895,6 +905,21 @@
           "total_copies"
         ],
         "title": "BookCreate"
+      },
+      "BookLoanRequest": {
+        "properties": {
+          "user_rating": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "User Rating"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_rating"
+        ],
+        "title": "BookLoanRequest"
       },
       "BookLoanResponse": {
         "properties": {

@@ -1,3 +1,5 @@
+import { createRequest } from './request'
+
 export const LoanStatus = {
   BORROWED: 1,
   RETURNED: 2,
@@ -26,8 +28,6 @@ export class LoansApiError extends Error {
   }
 }
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
@@ -46,14 +46,6 @@ export function isBookLoan(value: unknown): value is BookLoan {
   )
 }
 
-async function readJson(response: Response): Promise<unknown> {
-  try {
-    return await response.json()
-  } catch {
-    return undefined
-  }
-}
-
 function errorMessage(status: number, body: unknown): string {
   const detail = isRecord(body) && typeof body.detail === 'string' ? body.detail : ''
   if (status === 401) return 'Your session has expired. Sign in again.'
@@ -63,24 +55,15 @@ function errorMessage(status: number, body: unknown): string {
   return detail || 'The library service could not complete that loan request. Please try again.'
 }
 
-async function request<T>(path: string, token: string, method: 'GET' | 'POST'): Promise<T> {
-  let response: Response
-  try {
-    response = await fetch(`${apiBaseUrl}${path}`, {
-      method,
-      headers: { Authorization: `Bearer ${token}` },
-    })
-  } catch {
-    throw new LoansApiError(
-      0,
-      'Unable to reach the library service. Check that it is running and try again.',
-    )
-  }
-
-  const body = response.status === 204 ? undefined : await readJson(response)
-  if (!response.ok) throw new LoansApiError(response.status, errorMessage(response.status, body))
-  return body as T
-}
+const request = createRequest(
+  (status, body) =>
+    new LoansApiError(
+      status,
+      status === 0
+        ? 'Unable to reach the library service. Check that it is running and try again.'
+        : errorMessage(status, body),
+    ),
+)
 
 function validateLoan(body: unknown): BookLoan {
   if (!isBookLoan(body))
@@ -89,11 +72,11 @@ function validateLoan(body: unknown): BookLoan {
 }
 
 export async function borrowBook(token: string, bookId: number): Promise<BookLoan> {
-  return validateLoan(await request<unknown>(`/books/${bookId}/loans`, token, 'POST'))
+  return validateLoan(await request<unknown>(`/books/${bookId}/loans`, token, { method: 'POST' }))
 }
 
 export async function listMyLoans(token: string): Promise<BookLoan[]> {
-  const body = await request<unknown>('/loans/me', token, 'GET')
+  const body = await request<unknown>('/loans/me', token)
   if (!Array.isArray(body) || !body.every(isBookLoan)) {
     throw new LoansApiError(0, 'The library service returned an unexpected loans response.')
   }
@@ -101,7 +84,7 @@ export async function listMyLoans(token: string): Promise<BookLoan[]> {
 }
 
 export async function listBookLoans(token: string, bookId: number): Promise<BookLoan[]> {
-  const body = await request<unknown>(`/books/${bookId}/loans`, token, 'GET')
+  const body = await request<unknown>(`/books/${bookId}/loans`, token)
   if (!Array.isArray(body) || !body.every(isBookLoan)) {
     throw new LoansApiError(0, 'The library service returned an unexpected book-loans response.')
   }
@@ -109,5 +92,5 @@ export async function listBookLoans(token: string, bookId: number): Promise<Book
 }
 
 export async function returnLoan(token: string, loanId: number): Promise<BookLoan> {
-  return validateLoan(await request<unknown>(`/loans/${loanId}/return`, token, 'POST'))
+  return validateLoan(await request<unknown>(`/loans/${loanId}/return`, token, { method: 'POST' }))
 }
