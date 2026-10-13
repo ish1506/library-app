@@ -42,6 +42,21 @@ The API is available at `http://127.0.0.1:8000`, with interactive documentation 
 Request-time database access uses SQLAlchemy's async API with the psycopg driver;
 Alembic and the local seed helper use a separate synchronous client.
 
+## Database migrations
+
+From the repository root, generate a migration after adding or changing an ORM
+model, review the generated file, then apply it:
+
+```bash
+uv run --directory backend alembic revision --autogenerate -m "describe the schema change"
+# Review backend/alembic/versions/YYYYMMDD_<revision>_describe_the_schema_change.py.
+uv run --directory backend alembic upgrade head
+```
+
+Autogenerate compares `Base.metadata` with the current database, so import each
+new model from `app.models` and remove unrelated changes from the generated
+revision before applying it. See the [Alembic autogenerate documentation](https://alembic.sqlalchemy.org/en/latest/autogenerate.html).
+
 Refresh the checked-in OpenAPI document from the application definition with:
 
 ```bash

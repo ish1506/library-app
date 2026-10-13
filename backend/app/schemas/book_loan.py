@@ -3,6 +3,10 @@ from pydantic import BaseModel, ConfigDict
 from app.models.enums import LoanStatus
 
 
+class BookLoanRequest(BaseModel):
+    user_rating: int
+
+
 class BookLoanResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
